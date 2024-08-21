@@ -8,15 +8,8 @@ export async function authorization(
   res: Response,
   next: NextFunction
 ) {
-  let token;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.split(" ")[0] === "Bearer"
-  ) {
-    token = req.headers.authorization.split(" ")[1];
-  } else if (req.query && req.query.token) {
-    token = req.query.token;
-  }
+  let token: string;
+  if (req.cookies["auth-token"]) token = req.cookies["auth-token"];
   try {
     const decodedUser = jwt.verify(token as string, process.env.JWT_SECRET!);
 

@@ -14,17 +14,23 @@ router.post("/", async (req: Request, res: Response) => {
     const validation = await Register.safeParseAsync(body);
 
     if (!validation.success)
-      return res.status(400).json({
-        message: "لطفا اطلاعات را به درستی وارد کنید",
-        error: validation.error.errors[0],
-      });
+      return res
+        .status(400)
+        .json({
+          message: "لطفا اطلاعات را به درستی وارد کنید",
+          error: validation.error.errors[0],
+        })
+        .send();
 
     const user = await prisma.user.findUnique({ where: { email } });
 
     if (user)
-      return res.status(409).json({
-        message: "حساب کاربری قبلا ایجاد شده است",
-      });
+      return res
+        .status(409)
+        .json({
+          message: "حساب کاربری قبلا ایجاد شده است",
+        })
+        .send();
 
     const encryptedPass = await bcrypt.hash(password, process.env.ROUNDS || 10);
 
@@ -41,11 +47,15 @@ router.post("/", async (req: Request, res: Response) => {
     });
     return res
       .status(200)
-      .json({ message: "حساب کاربری با موفقیت ایجاد شد", verificationKey });
+      .json({ message: "حساب کاربری با موفقیت ایجاد شد", verificationKey })
+      .send();
   } catch (error) {
-    return res.status(500).json({
-      message: "خطا در سرور. لطفا به پشتیبانی پیام دهید",
-    });
+    return res
+      .status(500)
+      .json({
+        message: "خطا در سرور. لطفا به پشتیبانی پیام دهید",
+      })
+      .send();
   }
 });
 

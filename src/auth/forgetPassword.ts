@@ -12,20 +12,29 @@ router.post("/", async (req: Request, res: Response) => {
   const validation = await ForgetPassword.safeParseAsync(body);
 
   if (!validation.success)
-    return res.status(400).json({
-      message: "ایمیل صحیح نمیباشد",
-    });
+    return res
+      .status(400)
+      .json({
+        message: "ایمیل صحیح نمیباشد",
+      })
+      .send();
 
   const user = await prisma.user.findUnique({ where: { email: body.email } });
 
   if (!user)
-    return res.status(404).json({
-      message: "ایمیل صحیح نمیباشد",
-    });
+    return res
+      .status(404)
+      .json({
+        message: "ایمیل صحیح نمیباشد",
+      })
+      .send();
 
   const OTP = generateOtp();
 
   await prisma.user.update({ where: { email: body.email }, data: { OTP } });
 
-  return res.status(200).json({ message: "کد با موفقیت به شما ایمیل شد", OTP });
+  return res
+    .status(200)
+    .json({ message: "کد با موفقیت به شما ایمیل شد", OTP })
+    .send();
 });

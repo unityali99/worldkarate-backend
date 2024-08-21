@@ -5,18 +5,21 @@ import register from "./src/auth/signup";
 import login from "./src/auth/login";
 import profile from "./src/auth/profile";
 import { authorization } from "./middleware/authorization";
+import cookies from "cookie-parser";
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 const corsOptions: CorsOptions = {
-  origin: "*",
+  origin: true,
+  credentials: true,
   optionsSuccessStatus: 200,
 };
 
-app.use(express.json({ limit: "10mb" }));
-app.use(helmet());
 app.use(cors(corsOptions));
+app.use(express.json({ limit: "10mb" }));
+app.use(cookies());
+app.use(helmet());
 
 app.use("/register", register);
 app.use("/login", login);
