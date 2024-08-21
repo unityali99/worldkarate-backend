@@ -3,6 +3,7 @@ import helmet from "helmet";
 import cors, { CorsOptions } from "cors";
 import register from "./src/auth/signup";
 import login from "./src/auth/login";
+import logout from "./src/auth/logout";
 import profile from "./src/auth/profile";
 import { authorization } from "./middleware/authorization";
 import cookies from "cookie-parser";
@@ -24,6 +25,7 @@ app.use(helmet());
 app.use("/register", register);
 app.use("/login", login);
 app.use("/profile", authorization, profile);
+app.use("/logout", authorization, logout);
 
 app.listen(port, () => {
   return console.log(`Listening at http://localhost:${port}`);

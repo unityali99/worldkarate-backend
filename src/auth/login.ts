@@ -3,6 +3,7 @@ import Login, { LoginType } from "../../schemas/Login";
 import prisma from "../../prisma/db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import { createJwt, tokenCookieName } from "../../utils/createJwt";
 
 const router = Router();
 
@@ -41,16 +42,13 @@ router.post("/", async (req: Request, res: Response) => {
         })
         .send();
 
-    const jwtToken = jwt.sign(
-      { email: user.email, firstName: user.firstName, lastName: user.lastName },
-      process.env.JWT_SECRET
-    );
+    const jwtToken = createJwt(user);
 
     return res
-      .cookie("auth-token", jwtToken, {
+      .cookie(tokenCookieName, jwtToken, {
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "strict",
       })
       .status(200)
       .json({
