@@ -32,7 +32,10 @@ router.post("/", async (req: Request, res: Response) => {
         })
         .send();
 
-    const encryptedPass = await bcrypt.hash(password, process.env.ROUNDS || 10);
+    const encryptedPass = await bcrypt.hash(
+      password,
+      Number(process.env.ROUNDS) || 10
+    );
 
     const verificationKey = generateUniqueString(83);
 

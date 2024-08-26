@@ -24,7 +24,6 @@ router.put("/", async (req: Request, res: Response) => {
       where: { id: user.id },
       data: { email, firstName, lastName },
     });
-
     const newToken = createJwt(editedUser);
 
     return res

@@ -5,6 +5,9 @@ import register from "./src/auth/signup";
 import login from "./src/auth/login";
 import logout from "./src/auth/logout";
 import profile from "./src/auth/profile";
+import forgetPassword from "./src/auth/forgetPassword";
+import resetPassword from "./src/auth/resetPassword";
+import validateOtp from "./src/auth/validateOTP";
 import { authorization } from "./middleware/authorization";
 import cookies from "cookie-parser";
 
@@ -24,6 +27,9 @@ app.use(helmet());
 
 app.use("/register", register);
 app.use("/login", login);
+app.use("/forget-password", forgetPassword);
+app.use("/validate-otp", validateOtp);
+app.use("/reset-password", authorization, resetPassword);
 app.use("/profile", authorization, profile);
 app.use("/logout", authorization, logout);
 
