@@ -8,6 +8,9 @@ import profile from "./src/auth/profile";
 import forgetPassword from "./src/auth/forgetPassword";
 import resetPassword from "./src/auth/resetPassword";
 import validateOtp from "./src/auth/validateOTP";
+import createCourse from "./src/courses/createCourse";
+import fetchCourses from "./src/courses/fetchCourses";
+import deleteCourse from "./src/courses/deleteCourse";
 import { authorization } from "./middleware/authorization";
 import cookies from "cookie-parser";
 
@@ -32,6 +35,9 @@ app.use("/validate-otp", validateOtp);
 app.use("/reset-password", authorization, resetPassword);
 app.use("/profile", authorization, profile);
 app.use("/logout", authorization, logout);
+app.use("/create-course", createCourse);
+app.use("/fetch-courses", fetchCourses);
+app.use("/delete-course", deleteCourse);
 
 app.listen(port, () => {
   return console.log(`Listening at http://localhost:${port}`);

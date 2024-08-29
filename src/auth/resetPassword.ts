@@ -1,12 +1,14 @@
 import { Request, Response, Router } from "express";
-import ResetPassword, { ResetPasswordType } from "../../schemas/ResetPassword";
+import ResetPassword, {
+  ResetPasswordType,
+} from "../../schemas/auth/ResetPassword";
 import prisma from "../../prisma/db";
 import { User } from "@prisma/client";
 import bcrypt from "bcrypt";
 
 const router = Router();
 
-router.post("/", async (req: Request, res: Response) => {
+router.put("/", async (req: Request, res: Response) => {
   try {
     const body: ResetPasswordType & { user: User } = req.body;
 

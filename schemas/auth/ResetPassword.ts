@@ -1,4 +1,4 @@
-import { passwordRegex } from "../utils/passwordRegex";
+import { passwordRegex } from "../../utils/passwordRegex";
 import { z } from "zod";
 
 const requiredError = "لطفا رمز عبور خود را انتخاب کنید";

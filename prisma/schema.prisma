@@ -8,14 +8,57 @@ datasource db {
 }
 
 model User {
-  id              Int      @id @unique @default(autoincrement())
+  id              Int              @id @unique @default(autoincrement())
   firstName       String
   lastName        String
-  email           String   @unique
+  email           String           @unique
   password        String
-  verified        Boolean  @default(false)
-  verificationKey String   @unique
+  verified        Boolean          @default(false)
+  verificationKey String           @unique
   OTP             Int?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  courses         UsersOnCourses[]
+  transactions    Transaction[]
+}
+
+model Course {
+  id                    Int                     @id @unique @default(autoincrement())
+  title                 String
+  description           String
+  price                 Int
+  img                   String
+  users                 UsersOnCourses[]
+  TransactionsOnCourses TransactionsOnCourses[]
+}
+
+model Transaction {
+  id                    Int                     @id @unique @default(autoincrement())
+  isPaid                Boolean
+  transactionId         String                  @unique
+  TransactionsOnCourses TransactionsOnCourses[]
+  user                  User                    @relation(fields: [userId], references: [id])
+  userId                Int
+}
+
+model UsersOnCourses {
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([userId, courseId])
+}
+
+model TransactionsOnCourses {
+  course        Course      @relation(fields: [courseId], references: [id])
+  courseId      Int
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  transactionId Int
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@id([transactionId, courseId])
 }

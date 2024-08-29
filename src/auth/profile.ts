@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import Profile, { ProfileType } from "../../schemas/Profile";
+import Profile, { ProfileType } from "../../schemas/auth/Profile";
 import { User } from "@prisma/client";
 import prisma from "../../prisma/db";
 import { createJwt, tokenCookieName } from "../../utils/createJwt";

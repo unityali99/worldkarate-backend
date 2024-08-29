@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import OTP, { OTPType } from "../../schemas/OTP";
+import OTP, { OTPType } from "../../schemas/auth/OTP";
 import prisma from "../../prisma/db";
 import { createJwt, tokenCookieName } from "../../utils/createJwt";
 

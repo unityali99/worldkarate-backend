@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { passwordRegex } from "../utils/passwordRegex";
+import { passwordRegex } from "../../utils/passwordRegex";
 
 const Login = z.object({
   email: z

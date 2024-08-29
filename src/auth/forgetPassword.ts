@@ -1,13 +1,13 @@
 import { Request, Response, Router } from "express";
 import ForgetPassword, {
   ForgetPasswordType,
-} from "../../schemas/ForgetPassword";
+} from "../../schemas/auth/ForgetPassword";
 import prisma from "../../prisma/db";
 import { generateOtp } from "../../utils/generateOtp";
 
 const router = Router();
 
-router.post("/", async (req: Request, res: Response) => {
+router.put("/", async (req: Request, res: Response) => {
   try {
     const body: ForgetPasswordType = req.body;
 

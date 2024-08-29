@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import Login, { LoginType } from "../../schemas/Login";
+import Login, { LoginType } from "../../schemas/auth/Login";
 import prisma from "../../prisma/db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";

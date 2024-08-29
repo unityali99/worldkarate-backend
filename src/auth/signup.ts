@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import Register, { RegisterType } from "../../schemas/Register";
+import Register, { RegisterType } from "../../schemas/auth/Register";
 import prisma from "../../prisma/db";
 import bcrypt from "bcrypt";
 import { generateUniqueString } from "../../utils/generateUniqueString";
