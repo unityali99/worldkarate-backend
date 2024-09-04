@@ -13,6 +13,9 @@ import fetchCourses from "./src/courses/fetchCourses";
 import deleteCourse from "./src/courses/deleteCourse";
 import { authorization } from "./middleware/authorization";
 import cookies from "cookie-parser";
+import { adminAuth } from "./middleware/adminAuth";
+
+require("dotenv").config();
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -35,9 +38,9 @@ app.use("/validate-otp", validateOtp);
 app.use("/reset-password", authorization, resetPassword);
 app.use("/profile", authorization, profile);
 app.use("/logout", authorization, logout);
-app.use("/create-course", createCourse);
-app.use("/fetch-courses", fetchCourses);
-app.use("/delete-course", deleteCourse);
+app.use("/fetch-course", fetchCourses);
+app.use("/create-course", authorization, adminAuth, createCourse);
+app.use("/delete-course", authorization, adminAuth, deleteCourse);
 
 app.listen(port, () => {
   return console.log(`Listening at http://localhost:${port}`);

@@ -1,0 +1,1 @@
+{"version":3,"file":"capitlizeFirstLetter.js","sourceRoot":"","sources":["../../utils/capitlizeFirstLetter.ts"],"names":[],"mappings":";;AAAA,SAAS,qBAAqB,CAAC,SAAiB;IAC9C,MAAM,MAAM,GAAG,SAAS,CAAC,WAAW,EAAE,CAAC,IAAI,EAAE,CAAC;IAC9C,OAAO,MAAM,CAAC,MAAM,CAAC,CAAC,CAAC,CAAC,WAAW,EAAE,GAAG,MAAM,CAAC,KAAK,CAAC,CAAC,CAAC,CAAC;AAC1D,CAAC;AAED,kBAAe,qBAAqB,CAAC"}
