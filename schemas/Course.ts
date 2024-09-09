@@ -13,6 +13,7 @@ const Course = z.object({
     .number({ required_error: "Number is requried" })
     .nonnegative("Price can't be negative"),
   img: z.string({ required_error: "Course image is required" }),
+  link: z.string({ required_error: "Course link is requried" }),
 });
 
 export type CourseType = z.infer<typeof Course>;

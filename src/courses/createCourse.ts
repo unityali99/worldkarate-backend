@@ -16,7 +16,7 @@ router.post("/", async (req: Request, res: Response) => {
         .json({ message: validation.error.errors[0] })
         .send();
 
-    const { description, img, price, title } = body;
+    const { description, img, price, title, link } = body;
 
     const course = await prisma.course.create({
       data: { description, title, img, price },
@@ -24,7 +24,7 @@ router.post("/", async (req: Request, res: Response) => {
 
     return res
       .status(200)
-      .json({ message: "Course created successfully", course })
+      .json({ message: "دوره با موفقیت ایجاد شد", course })
       .send();
   } catch (error) {
     return res

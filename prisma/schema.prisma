@@ -29,6 +29,7 @@ model Course {
   description           String
   price                 Int
   img                   String
+  link                  String?
   users                 UsersOnCourses[]
   TransactionsOnCourses TransactionsOnCourses[]
 }
@@ -62,4 +63,10 @@ model TransactionsOnCourses {
   updatedAt     DateTime    @updatedAt
 
   @@id([transactionId, courseId])
+}
+
+
+model Newsletter {
+  id      Int    @id
+  email  String  @unique
 }

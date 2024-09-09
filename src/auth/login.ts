@@ -2,8 +2,8 @@ import { Request, Response, Router } from "express";
 import Login, { LoginType } from "../../schemas/auth/Login";
 import prisma from "../../prisma/db";
 import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
 import { createJwt, tokenCookieName } from "../../utils/createJwt";
+import { cookieOptions } from "../../utils/cookieOptions";
 
 const router = Router();
 
@@ -45,11 +45,7 @@ router.post("/", async (req: Request, res: Response) => {
     const jwtToken = createJwt(user);
 
     return res
-      .cookie(tokenCookieName, jwtToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-      })
+      .cookie(tokenCookieName, jwtToken, cookieOptions)
       .status(200)
       .json({
         message: "ورود موفقیت آمیز بود",
