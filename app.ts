@@ -25,15 +25,16 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const corsOptions: CorsOptions = {
-  origin: "https://worldkarate-courses.onrender.com",
+  origin: true,
   credentials: true,
   optionsSuccessStatus: 200,
 };
 
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "10mb" }));
-app.use(cookies());
+app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
+app.use(cookies());
 
 // Authorization
 app.use("/register", register);
@@ -51,9 +52,11 @@ app.use("/delete-course", authorization, adminAuth, deleteCourse);
 app.use("/admin/fetch-course", authorization, adminAuth, adminFetchCourses);
 app.use("/user/fetch-course", authorization, fetchUserCourses);
 
+//payment
+app.use("/checkout", authorization, checkout);
+
 // Others
 app.use("/register-newsletter", registerNewsletter);
-app.use("/checkout", authorization, checkout);
 
 app.listen(port, () => {
   return console.log(`Listening at http://localhost:${port}`);
