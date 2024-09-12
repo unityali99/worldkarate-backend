@@ -16,6 +16,7 @@ const express_1 = require("express");
 const Profile_1 = __importDefault(require("../../schemas/auth/Profile"));
 const db_1 = __importDefault(require("../../prisma/db"));
 const createJwt_1 = require("../../utils/createJwt");
+const cookieOptions_1 = require("../../utils/cookieOptions");
 const router = (0, express_1.Router)();
 router.put("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -36,11 +37,7 @@ router.put("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         });
         const newToken = (0, createJwt_1.createJwt)(editedUser);
         return res
-            .cookie(createJwt_1.tokenCookieName, newToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "strict",
-        })
+            .cookie(createJwt_1.tokenCookieName, newToken, cookieOptions_1.cookieOptions)
             .status(200)
             .json({ message: "اطلاعات کاربری با موفقیت اصلاح شد" })
             .send();

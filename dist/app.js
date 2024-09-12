@@ -27,7 +27,7 @@ require("dotenv").config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 const corsOptions = {
-    origin: true,
+    origin: "https://worldkarate-courses.onrender.com",
     credentials: true,
     optionsSuccessStatus: 200,
 };

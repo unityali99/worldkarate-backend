@@ -3,6 +3,7 @@ import Profile, { ProfileType } from "../../schemas/auth/Profile";
 import { User } from "@prisma/client";
 import prisma from "../../prisma/db";
 import { createJwt, tokenCookieName } from "../../utils/createJwt";
+import { cookieOptions } from "../../utils/cookieOptions";
 
 const router = Router();
 
@@ -27,11 +28,7 @@ router.put("/", async (req: Request, res: Response) => {
     const newToken = createJwt(editedUser);
 
     return res
-      .cookie(tokenCookieName, newToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: "strict",
-      })
+      .cookie(tokenCookieName, newToken, cookieOptions)
       .status(200)
       .json({ message: "اطلاعات کاربری با موفقیت اصلاح شد" })
       .send();
