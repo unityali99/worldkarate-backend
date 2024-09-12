@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
-import Course, { CourseType } from "../../schemas/Course";
-import prisma from "../../prisma/db";
+import Course, { CourseType } from "../../../schemas/Course";
+import prisma from "../../../prisma/db";
 
 const router = Router();
 

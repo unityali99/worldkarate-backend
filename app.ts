@@ -8,9 +8,13 @@ import profile from "./src/auth/profile";
 import forgetPassword from "./src/auth/forgetPassword";
 import resetPassword from "./src/auth/resetPassword";
 import validateOtp from "./src/auth/validateOTP";
-import createCourse from "./src/courses/createCourse";
-import fetchCourses from "./src/courses/fetchCourses";
-import deleteCourse from "./src/courses/deleteCourse";
+import createCourse from "./src/courses/crud/createCourse";
+import fetchCourses from "./src/courses/crud/fetchCourses";
+import fetchUserCourses from "./src/courses/user/fetchUserCourses";
+import adminFetchCourses from "./src/courses/admin/adminFetchCourses";
+import deleteCourse from "./src/courses/crud/deleteCourse";
+import registerNewsletter from "./src/newsletter/registerNewsletter";
+import checkout from "./src/payment/checkout";
 import { authorization } from "./middleware/authorization";
 import cookies from "cookie-parser";
 import { adminAuth } from "./middleware/adminAuth";
@@ -31,6 +35,7 @@ app.use(express.json({ limit: "10mb" }));
 app.use(cookies());
 app.use(helmet());
 
+// Authorization
 app.use("/register", register);
 app.use("/login", login);
 app.use("/forget-password", forgetPassword);
@@ -38,9 +43,17 @@ app.use("/validate-otp", validateOtp);
 app.use("/reset-password", authorization, resetPassword);
 app.use("/profile", authorization, profile);
 app.use("/logout", authorization, logout);
+
+// CRUD
 app.use("/fetch-course", fetchCourses);
 app.use("/create-course", authorization, adminAuth, createCourse);
 app.use("/delete-course", authorization, adminAuth, deleteCourse);
+app.use("/admin/fetch-course", authorization, adminAuth, adminFetchCourses);
+app.use("/user/fetch-course", authorization, fetchUserCourses);
+
+// Others
+app.use("/register-newsletter", registerNewsletter);
+app.use("/checkout", authorization, checkout);
 
 app.listen(port, () => {
   return console.log(`Listening at http://localhost:${port}`);

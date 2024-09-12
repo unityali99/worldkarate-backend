@@ -37,7 +37,6 @@ router.put("/", async (req: Request, res: Response) => {
       .json({ message: "رمز عبور با موفقیت تغییر پیدا کرد" })
       .send();
   } catch (error) {
-    console.log(error);
     return res
       .status(500)
       .json({
