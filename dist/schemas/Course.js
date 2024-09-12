@@ -14,6 +14,7 @@ const Course = zod_1.z.object({
         .number({ required_error: "Number is requried" })
         .nonnegative("Price can't be negative"),
     img: zod_1.z.string({ required_error: "Course image is required" }),
+    link: zod_1.z.string({ required_error: "Course link is requried" }),
 });
 exports.default = Course;
 //# sourceMappingURL=Course.js.map

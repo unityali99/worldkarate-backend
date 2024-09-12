@@ -16,6 +16,7 @@ const express_1 = require("express");
 const OTP_1 = __importDefault(require("../../schemas/auth/OTP"));
 const db_1 = __importDefault(require("../../prisma/db"));
 const createJwt_1 = require("../../utils/createJwt");
+const cookieOptions_1 = require("../../utils/cookieOptions");
 const router = (0, express_1.Router)();
 router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -27,14 +28,9 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const isOtpValid = body.OTP === user.OTP;
         if (!isOtpValid)
             return res.status(400).json({ message: "کد یکبار مصرف صحیح نمیباشد" });
-        const { email, firstName, lastName } = user;
-        const jwt = (0, createJwt_1.createJwt)({ email, firstName, lastName });
+        const jwt = (0, createJwt_1.createJwt)(user);
         return res
-            .cookie(createJwt_1.tokenCookieName, jwt, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "strict",
-        })
+            .cookie(createJwt_1.tokenCookieName, jwt, cookieOptions_1.cookieOptions)
             .status(200)
             .json({ message: "لطفا رمز عبور خود را انتخاب نمایید" });
     }

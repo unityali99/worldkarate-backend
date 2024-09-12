@@ -8,7 +8,7 @@ router.get("/", async (req: Request, res: Response) => {
   try {
     const { user }: { user: User } = req.body;
     const courses = await prisma.course.findMany({
-      where: { users: { every: { userId: user.id } } },
+      where: { users: { some: { userId: user.id } } },
     });
     return res.status(200).json(courses);
   } catch (error) {

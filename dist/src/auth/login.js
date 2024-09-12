@@ -17,6 +17,7 @@ const Login_1 = __importDefault(require("../../schemas/auth/Login"));
 const db_1 = __importDefault(require("../../prisma/db"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const createJwt_1 = require("../../utils/createJwt");
+const cookieOptions_1 = require("../../utils/cookieOptions");
 const router = (0, express_1.Router)();
 router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -49,11 +50,7 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 .send();
         const jwtToken = (0, createJwt_1.createJwt)(user);
         return res
-            .cookie(createJwt_1.tokenCookieName, jwtToken, {
-            httpOnly: true,
-            secure: true,
-            sameSite: "strict",
-        })
+            .cookie(createJwt_1.tokenCookieName, jwtToken, cookieOptions_1.cookieOptions)
             .status(200)
             .json({
             message: "ورود موفقیت آمیز بود",

@@ -13,8 +13,12 @@ router.get("/:email", async (req: Request, res: Response) => {
     if (!user)
       return res.status(400).json({ message: "کاربری با این ایمل وجود ندارد" });
 
+    const userOnCourses = await prisma.usersOnCourses.findMany({
+      where: { userId: user.id },
+    });
+    const courseIds = userOnCourses.map((c) => c.userId);
     const courses = await prisma.course.findMany({
-      where: { users: { every: { userId: user.id } } },
+      where: { id: { in: courseIds } },
     });
     return res.status(200).json(courses);
   } catch (error) {

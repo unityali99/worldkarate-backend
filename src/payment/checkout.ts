@@ -30,6 +30,20 @@ router.post("/", async (req: Request, res: Response) => {
       0
     );
     const validCourseIds = courses.map((c) => ({ courseId: c.id }));
+
+    for (const { id } of courses) {
+      const userOnCourse = await prisma.usersOnCourses.findUnique({
+        where: { userId_courseId: { courseId: id, userId: user.id } },
+      });
+      if (userOnCourse)
+        return res
+          .status(400)
+          .json({
+            message: "یکی یا چند تا از دوره های سبد خرید قبلا خریداری شده اند",
+          })
+          .send();
+    }
+
     const transactionId = await generateUniqueTransactionId();
     const transaction = await prisma.transaction.create({
       data: {
@@ -40,6 +54,7 @@ router.post("/", async (req: Request, res: Response) => {
         TransactionsOnCourses: { createMany: { data: [...validCourseIds] } },
       },
     });
+
     const newUserOnCourse = await prisma.user.update({
       where: { id: user.id },
       data: { courses: { createMany: { data: [...validCourseIds] } } },

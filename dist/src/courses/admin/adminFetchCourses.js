@@ -13,40 +13,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const ResetPassword_1 = __importDefault(require("../../schemas/auth/ResetPassword"));
-const db_1 = __importDefault(require("../../prisma/db"));
-const bcrypt_1 = __importDefault(require("bcrypt"));
+const db_1 = __importDefault(require("../../../prisma/db"));
 const router = (0, express_1.Router)();
-router.put("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.get("/:email", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const body = req.body;
-        const validation = yield ResetPassword_1.default.safeParseAsync(body);
-        if (!validation.success)
-            return res
-                .status(400)
-                .json({
-                message: validation.error.errors[0],
-            })
-                .send();
-        const encryptedPass = yield bcrypt_1.default.hash(body.newPassword, Number(process.env.ROUNDS) || 10);
-        const editedUser = yield db_1.default.user.update({
-            where: { email: body.user.email },
-            data: { password: encryptedPass },
+        const email = req.params.email;
+        const user = yield db_1.default.user.findUnique({
+            where: { email: email },
         });
-        return res
-            .status(200)
-            .json({ message: "رمز عبور با موفقیت تغییر پیدا کرد" })
-            .send();
+        if (!user)
+            return res.status(400).json({ message: "کاربری با این ایمل وجود ندارد" });
+        const userOnCourses = yield db_1.default.usersOnCourses.findMany({
+            where: { userId: user.id },
+        });
+        const courseIds = userOnCourses.map((c) => c.userId);
+        const courses = yield db_1.default.course.findMany({
+            where: { id: { in: courseIds } },
+        });
+        return res.status(200).json(courses);
     }
     catch (error) {
-        return res
-            .status(500)
-            .json({
+        return res.status(500).json({
             message: "خطا در سرور. لطفا به پشتیبانی پیام دهید",
             error,
-        })
-            .send();
+        });
     }
 }));
 exports.default = router;
-//# sourceMappingURL=resetPassword.js.map
+//# sourceMappingURL=adminFetchCourses.js.map
