@@ -25,7 +25,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const corsOptions: CorsOptions = {
-  origin: "https://worldkarate-courses.onrender.com",
+  origin: true,
   credentials: true,
   optionsSuccessStatus: 200,
 };
