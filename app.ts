@@ -29,6 +29,7 @@ const corsOptions: CorsOptions = {
   credentials: true,
   optionsSuccessStatus: 200,
 };
+console.log("Environment:", process.env.ENV_MODE);
 
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "10mb" }));

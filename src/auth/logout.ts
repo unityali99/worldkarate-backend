@@ -8,7 +8,8 @@ router.post("/", (req: Request, res: Response) => {
   res
     .cookie(tokenCookieName, "", cookieOptions)
     .status(200)
-    .json({ message: "با موفقیت خارج شدید" });
+    .json({ message: "با موفقیت خارج شدید" })
+    .send();
 });
 
 export default router;
