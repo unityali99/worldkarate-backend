@@ -9,5 +9,5 @@ export const cookieOptions: CookieOptions = {
   sameSite: "lax",
   path: "/",
   ...(isProduction && { domain: "worldkarate.ir" }),
-  maxAge: 100 * 24 * 60 * 60 * 1000,
+  maxAge: 10 * 24 * 60 * 60 * 1000,
 };
