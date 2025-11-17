@@ -24,24 +24,32 @@ model User {
 }
 
 model Course {
-  id                    Int                     @id @unique @default(autoincrement())
-  title                 String
-  description           String
-  price                 Int
-  img                   String
-  link                  String?
-  users                 UsersOnCourses[]
-  TransactionsOnCourses TransactionsOnCourses[]
+  id           Int                     @id @unique @default(autoincrement())
+  title        String
+  description  String
+  price        Int // in Rials
+  img          String
+  link         String?
+  previewLinks String[]
+  users        UsersOnCourses[]
+  transactions TransactionsOnCourses[]
 }
 
 model Transaction {
   id                    Int                     @id @unique @default(autoincrement())
-  isPaid                Boolean
-  transactionId         String                  @unique
-  TransactionsOnCourses TransactionsOnCourses[]
+  isPaid                Boolean                 @default(false) // becomes true after verification
+  transactionId         String                  @unique // ZarinPal's `authority`
+  totalPrice            Int // sum of course prices
   user                  User                    @relation(fields: [userId], references: [id])
   userId                Int
-  totalPrice            Int
+  transactionsOnCourses TransactionsOnCourses[]
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  authority             String                  @unique @default(uuid())
+
+  @@index([transactionId])
+  @@index([userId])
+  @@index([authority])
 }
 
 model UsersOnCourses {

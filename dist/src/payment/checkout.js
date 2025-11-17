@@ -52,7 +52,7 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 transactionId,
                 totalPrice,
                 user: { connect: { id: user.id } },
-                TransactionsOnCourses: { createMany: { data: [...validCourseIds] } },
+                transactionsOnCourses: { createMany: { data: [...validCourseIds] } },
             },
         });
         const newUserOnCourse = yield db_1.default.user.update({

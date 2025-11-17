@@ -31,10 +31,12 @@ const corsOptions = {
     credentials: true,
     optionsSuccessStatus: 200,
 };
+console.log("Environment:", process.env.ENV_MODE);
 app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json({ limit: "10mb" }));
-app.use((0, cookie_parser_1.default)());
+app.use(express_1.default.urlencoded({ extended: true }));
 app.use((0, helmet_1.default)());
+app.use((0, cookie_parser_1.default)());
 // Authorization
 app.use("/register", signup_1.default);
 app.use("/login", login_1.default);
@@ -49,9 +51,10 @@ app.use("/create-course", authorization_1.authorization, adminAuth_1.adminAuth, 
 app.use("/delete-course", authorization_1.authorization, adminAuth_1.adminAuth, deleteCourse_1.default);
 app.use("/admin/fetch-course", authorization_1.authorization, adminAuth_1.adminAuth, adminFetchCourses_1.default);
 app.use("/user/fetch-course", authorization_1.authorization, fetchUserCourses_1.default);
+//payment
+app.use("/checkout", authorization_1.authorization, checkout_1.default);
 // Others
 app.use("/register-newsletter", registerNewsletter_1.default);
-app.use("/checkout", authorization_1.authorization, checkout_1.default);
 app.listen(port, () => {
     return console.log(`Listening at http://localhost:${port}`);
 });

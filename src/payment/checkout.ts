@@ -1,11 +1,13 @@
 import { Request, Response, Router } from "express";
 import { User } from "@prisma/client";
 import prisma from "../../prisma/db";
-import { generateUniqueTransactionId } from "../../utils/generateUniqueTransactionId";
+import { zarinpal } from "../../utils/zarinpal";
+import { authorization } from "../../middleware/authorization";
+import { isProduction } from "../../utils/cookieOptions";
 
 const router = Router();
 
-router.post("/", async (req: Request, res: Response) => {
+router.post("/", authorization, async (req: Request, res: Response) => {
   try {
     const body: { courseIds: string[]; user: User } = req.body;
 
@@ -39,38 +41,71 @@ router.post("/", async (req: Request, res: Response) => {
         return res
           .status(400)
           .json({
-            message: "یکی یا چند تا از دوره های سبد خرید قبلا خریداری شده اند",
+            message: "یک یا چند مورد از دوره های سبد خرید قبلا خریداری شده است",
           })
           .send();
     }
 
-    const transactionId = await generateUniqueTransactionId();
-    const transaction = await prisma.transaction.create({
-      data: {
-        isPaid: true,
-        transactionId,
-        totalPrice,
-        user: { connect: { id: user.id } },
-        TransactionsOnCourses: { createMany: { data: [...validCourseIds] } },
-      },
+    // Create payment request with Zarinpal FIRST to get the authority
+    const paymentRequest = await zarinpal.payments.create({
+      amount: totalPrice,
+      description: `آکادمی کاراته سنسی یاری`,
+      callback_url: `${
+        process.env.FRONTEND_URL || "http://localhost:3000"
+      }/payment/verify`,
+      email: user.email,
     });
 
-    const newUserOnCourse = await prisma.user.update({
-      where: { id: user.id },
-      data: { courses: { createMany: { data: [...validCourseIds] } } },
-    });
+    console.log(
+      "Payment request response:",
+      JSON.stringify(paymentRequest, null, 2)
+    );
 
-    res
-      .status(200)
-      .json({ message: "پرداخت با موفقیت انجام شد", courses, transaction });
+    if (paymentRequest.data.code === 100) {
+      // Get authority from Zarinpal response
+      const authority = paymentRequest.data.authority;
+
+      // Create transaction record (initially unpaid) with Zarinpal's authority
+      const transaction = await prisma.transaction.create({
+        data: {
+          isPaid: false,
+          transactionId: authority, // Store authority as transactionId
+          totalPrice,
+          authority,
+          user: { connect: { id: user.id } },
+          transactionsOnCourses: { createMany: { data: [...validCourseIds] } },
+        },
+      });
+
+      // Payment request successful, return payment URL
+      // Use sandbox URL for development, production URL for production
+      const baseUrl = isProduction
+        ? "https://www.zarinpal.com/pg/StartPay"
+        : "https://sandbox.zarinpal.com/pg/StartPay";
+      const paymentUrl = `${baseUrl}/${authority}`;
+      console.log("Payment URL:", paymentUrl);
+
+      // Return payment URL in response
+      return res.status(200).json({
+        message: "در حال انتقال به درگاه پرداخت...",
+        paymentUrl,
+        authority,
+        transactionId: transaction.id,
+      });
+    } else {
+      // Payment request failed
+      return res.status(400).json({
+        message: "خطا در ایجاد درخواست پرداخت. لطفا دوباره تلاش کنید.",
+        error: paymentRequest,
+      });
+    }
   } catch (error) {
     console.log(error);
     return res
       .status(500)
       .json({
-        message:
-          "پرداخت با خطا مواجه شد. درصورت برداشت از حساب، مبلغ کسر شده حداکثر تا 72 ساعت به حساب شما بازگشت خواهد خورد",
-        error,
+        message: "خطا در پردازش درخواست پرداخت",
+        error: error instanceof Error ? error.message : "خطای نامشخص",
       })
       .send();
   }

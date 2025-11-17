@@ -15,9 +15,11 @@ import adminFetchCourses from "./src/courses/admin/adminFetchCourses";
 import deleteCourse from "./src/courses/crud/deleteCourse";
 import registerNewsletter from "./src/newsletter/registerNewsletter";
 import checkout from "./src/payment/checkout";
+import verify from "./src/payment/verify";
 import { authorization } from "./middleware/authorization";
 import cookies from "cookie-parser";
 import { adminAuth } from "./middleware/adminAuth";
+import { isProduction } from "./utils/cookieOptions";
 
 require("dotenv").config();
 
@@ -25,7 +27,9 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 const corsOptions: CorsOptions = {
-  origin: true,
+  origin: isProduction
+    ? ["https://worldkarate.ir", "https://www.worldkarate.ir"]
+    : true,
   credentials: true,
   optionsSuccessStatus: 200,
 };
@@ -54,7 +58,8 @@ app.use("/admin/fetch-course", authorization, adminAuth, adminFetchCourses);
 app.use("/user/fetch-course", authorization, fetchUserCourses);
 
 //payment
-app.use("/checkout", authorization, checkout);
+app.use("/payment/checkout", checkout);
+app.use("/payment/verify", verify);
 
 // Others
 app.use("/register-newsletter", registerNewsletter);
