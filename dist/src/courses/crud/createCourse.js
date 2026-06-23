@@ -27,7 +27,7 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 .send();
         const { description, img, price, title, link } = body;
         const course = yield db_1.default.course.create({
-            data: { description, title, img, price },
+            data: { description, title, img, price, link },
         });
         return res
             .status(200)

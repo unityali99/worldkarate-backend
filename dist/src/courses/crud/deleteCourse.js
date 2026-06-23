@@ -22,6 +22,7 @@ router.delete("/:courseId", (req, res) => __awaiter(void 0, void 0, void 0, func
         return res.status(200).json({ message: "دوره با موفقیت حذف شد" });
     }
     catch (error) {
+        console.log(error);
         return res.status(500).json({
             message: "خطا در سرور. لطفا به پشتیبانی پیام دهید",
             error,

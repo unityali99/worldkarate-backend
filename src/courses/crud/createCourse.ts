@@ -19,7 +19,7 @@ router.post("/", async (req: Request, res: Response) => {
     const { description, img, price, title, link } = body;
 
     const course = await prisma.course.create({
-      data: { description, title, img, price },
+      data: { description, title, img, price, link },
     });
 
     return res

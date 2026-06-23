@@ -61,7 +61,7 @@ router.post("/", async (req: Request, res: Response) => {
 
     if (verification.data.code === 100) {
       // Payment successful - update transaction as paid
-      const refId = verification.data.ref_id;
+      const refId = String(verification.data.ref_id);
 
       await prisma.transaction.update({
         where: { id: transaction.id },

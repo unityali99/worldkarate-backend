@@ -1,0 +1,366 @@
+<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><title>مستندات بک‌اند World Karate</title><style>
+    @page { size: A4; margin: 17mm 15mm 18mm; }
+    @page:first { margin: 0; }
+    :root { --ink:#173142; --muted:#56717f; --brand:#e9572f; --cyan:#087f9a; --paper:#fff; --soft:#edf5f7; }
+    * { box-sizing:border-box; }
+    html { font-size:10.4pt; }
+    body { margin:0; color:var(--ink); font-family:Tahoma, 'Segoe UI', Arial, sans-serif; line-height:1.63; background:var(--paper); }
+    .cover { height:297mm; margin:-17mm -15mm -18mm; padding:34mm 24mm; color:white; background:linear-gradient(145deg,#071522 0%,#13394c 70%,#e9572f 160%); position:relative; overflow:hidden; page-break-after:always; }
+    .cover:before,.cover:after { content:''; position:absolute; border-radius:50%; border:2px solid rgba(255,255,255,.1); }
+    .cover:before { width:155mm;height:155mm;right:-65mm;top:-42mm;box-shadow:0 0 0 20mm rgba(8,127,154,.08),0 0 0 40mm rgba(8,127,154,.05); }
+    .cover:after { width:110mm;height:110mm;left:-55mm;bottom:-38mm;box-shadow:0 0 0 17mm rgba(233,87,47,.08); }
+    .kicker { color:#79d4e4; text-transform:uppercase; letter-spacing:.18em; font-weight:700; font-size:11pt; margin-top:28mm; }
+    .cover h1 { font-size:36pt; line-height:1.15; margin:15mm 0 7mm; max-width:150mm; color:#fff; }
+    .cover .subtitle { font-size:17pt; color:#d7edf2; max-width:135mm; }
+    .cover .edition { position:absolute; bottom:28mm; right:24mm; color:#a9cbd4; font-size:10pt; }
+    .accent { width:24mm;height:3px;background:var(--brand);margin-top:11mm; }
+    main { max-width:100%; }
+    h1,h2,h3,h4 { color:#102f40; line-height:1.25; break-after:avoid; }
+    h2 { font-size:22pt; margin:10mm 0 4mm; padding-bottom:2.5mm; border-bottom:2px solid #d5e8ed; page-break-before:always; }
+    h2:first-of-type { page-break-before:auto; }
+    h3 { font-size:15pt; margin:7mm 0 2.5mm; color:#0b7288; }
+    h4 { font-size:12pt; margin:5mm 0 2mm; color:#bd4527; }
+    p { margin:0 0 3.2mm; orphans:3; widows:3; }
+    a { color:#087f9a; text-decoration:none; }
+    strong { color:#102f40; }
+    code { direction:ltr; unicode-bidi:embed; font-family:Consolas,'Courier New',monospace; background:#eaf2f4; padding:.3mm 1.1mm; border-radius:3px; font-size:.9em; }
+    pre { direction:ltr; text-align:left; background:#0d2736; color:#d9edf2; padding:4mm; border-radius:7px; overflow:hidden; break-inside:avoid; line-height:1.45; }
+    pre code { background:none;color:inherit;padding:0;font-size:8.4pt;white-space:pre-wrap; }
+    blockquote { margin:4mm 0 7mm; padding:4mm 5mm; color:#385866; background:#edf5f7; border-right:4px solid var(--brand); border-radius:5px; }
+    ul,ol { margin:2mm 0 4mm; padding-right:7mm; }
+    li { margin:1.2mm 0; }
+    table { width:100%; border-collapse:collapse; margin:4mm 0 6mm; font-size:8.8pt; break-inside:auto; }
+    tr { break-inside:avoid; }
+    th { background:#12394b; color:white; font-weight:700; text-align:right; }
+    th,td { padding:2.2mm 2.5mm; border:1px solid #cddfe4; vertical-align:top; }
+    tbody tr:nth-child(even) { background:#f1f7f8; }
+    img { display:block; max-width:100%; max-height:238mm; margin:6mm auto 8mm; object-fit:contain; break-inside:avoid; }
+    hr { border:0;border-top:1px solid #cddfe4;margin:9mm 0; }
+    @media print { a { color:inherit; } }
+  </style></head><body>
+  <section class="cover"><div class="kicker">WORLD KARATE · BACKEND</div><h1>مستندات بک‌اند World Karate</h1><div class="subtitle">راهنمای جامع معماری، API، داده، امنیت و استقرار</div><div class="accent"></div><div class="edition">نسخهٔ ۱٫۰ · بررسی‌شده بر اساس کد موجود · ژوئن ۲۰۲۶</div></section>
+  <main><blockquote>راهنمای معماری، API، مدل داده، اجرا و استقرار  <br><strong>نسخهٔ سند:</strong> ۱٫۰ · <strong>تاریخ بررسی کد:</strong> ۲۳ ژوئن ۲۰۲۶ · <strong>نسخهٔ برنامه:</strong> <code>1.0.0</code></blockquote>
+<p>بک‌اند World Karate سرویس سمت سرور سامانهٔ دوره‌های آموزشی کاراته است. این برنامه یک API مبتنی بر JSON برای ثبت‌نام و ورود، بازیابی رمز عبور، ویرایش پروفایل، نمایش دوره‌ها، مدیریت دوره توسط ادمین، دسترسی به دوره‌های خریداری‌شده، عضویت در خبرنامه و پرداخت/تأیید تراکنش از طریق زرین‌پال فراهم می‌کند.</p>
+<p>این سند رفتار <strong>واقعی نسخهٔ فعلی کد</strong> را شرح می‌دهد. مواردی که در مدل داده یا وابستگی‌ها دیده می‌شوند اما هنوز کامل پیاده‌سازی نشده‌اند، صریحاً در بخش <a href="#محدودیت‌ها-و-گام‌های-بعدی">محدودیت‌ها و گام‌های بعدی</a> آمده‌اند.</p>
+<h2 id="فهرست-مطالب">فهرست مطالب</h2>
+<ol>
+<li><a href="#نمای-کلی">نمای کلی</a>  </li>
+<li><a href="#راه‌اندازی-سریع">راه‌اندازی سریع</a>  </li>
+<li><a href="#تنظیم-متغیرهای-محیطی">تنظیم متغیرهای محیطی</a>  </li>
+<li><a href="#معماری">معماری</a>  </li>
+<li><a href="#مدل-داده">مدل داده</a>  </li>
+<li><a href="#احراز-هویت-و-مجوزها">احراز هویت و مجوزها</a>  </li>
+<li><a href="#رفتار-قابلیت‌ها">رفتار قابلیت‌ها</a>  </li>
+<li><a href="#مرجع-api">مرجع API</a>  </li>
+<li><a href="#چرخهٔ-پرداخت">چرخهٔ پرداخت</a>  </li>
+<li><a href="#اعتبارسنجی-و-خطاها">اعتبارسنجی و خطاها</a>  </li>
+<li><a href="#امنیت">امنیت</a>  </li>
+<li><a href="#ساخت-استقرار-و-عملیات">ساخت، استقرار و عملیات</a>  </li>
+<li><a href="#آزمون-و-رفع-اشکال">آزمون و رفع اشکال</a>  </li>
+<li><a href="#محدودیت‌ها-و-گام‌های-بعدی">محدودیت‌ها و گام‌های بعدی</a></li>
+</ol>
+<h2 id="نمای-کلی">نمای کلی</h2>
+<table><thead><tr><th>بخش</th><th>پیاده‌سازی</th></tr></thead><tbody><tr><td>محیط اجرا</td><td>Node.js، فریم‌ورک Express 4 و TypeScript با خروجی CommonJS</td></tr><tr><td>پایگاه داده</td><td>PostgreSQL از طریق Prisma 5</td></tr><tr><td>احراز هویت</td><td>JWT در کوکی HTTP-only با نام <code>auth-token</code></td></tr><tr><td>رمز عبور</td><td>bcrypt با هزینهٔ قابل تنظیم</td></tr><tr><td>اعتبارسنجی</td><td>Zod</td></tr><tr><td>پرداخت</td><td>SDK زرین‌پال؛ حالت sandbox در توسعه</td></tr><tr><td>سخت‌سازی HTTP</td><td>Helmet، CORS، محدودیت حجم بدنه و cookie-parser</td></tr><tr><td>موجودیت‌ها</td><td>User، Course، Transaction، Newsletter و دو جدول واسط</td></tr><tr><td>سبک API</td><td>endpointهای JSON با پیام‌های کاربرمحور فارسی</td></tr><tr><td>تست خودکار</td><td>در نسخهٔ فعلی وجود ندارد</td></tr></tbody></table>
+<h3 id="قابلیت-های-پیاده-سازی-شده">قابلیت‌های پیاده‌سازی‌شده</h3>
+<ul>
+<li>ساخت حساب با ایمیل یکتا و رمز هش‌شده با bcrypt؛</li>
+<li>ورود با کوکی JWT و خروج با خالی‌کردن همان کوکی؛</li>
+<li>آغاز بازیابی رمز، بررسی OTP چهاررقمی و تعیین رمز جدید؛</li>
+<li>ویرایش نام و ایمیل کاربر و صدور JWT جدید؛</li>
+<li>مشاهدهٔ عمومی فهرست دوره‌ها و جزئیات یک دوره؛</li>
+<li>ایجاد/حذف دوره و جست‌وجوی دوره‌های کاربر توسط ادمین؛</li>
+<li>مشاهدهٔ دوره‌های خریداری‌شدهٔ کاربر واردشده؛</li>
+<li>ثبت ایمیل یکتا در خبرنامه؛</li>
+<li>محاسبهٔ سبد با قیمت‌های سمت سرور، ساخت تراکنش زرین‌پال، تأیید پرداخت و اعطای دسترسی به دوره‌ها به‌شکل idempotent.</li>
+</ul>
+<h2 id="راه-اندازی-سریع">راه‌اندازی سریع</h2>
+<h3 id="پیش-نیازها">پیش‌نیازها</h3>
+<ul>
+<li>Node.js نسخهٔ ۲۰ یا بالاتر پیشنهاد می‌شود. هنگام تولید این سند پروژه با Node <code>22.17.1</code> و npm <code>11.16.0</code> با موفقیت build شد.</li>
+<li>یک PostgreSQL قابل دسترس با connection string معتبر؛</li>
+<li>شناسهٔ پذیرنده و access token زرین‌پال. این دو در زمان بالا آمدن برنامه بررسی می‌شوند، حتی اگر endpoint پرداخت فراخوانی نشود.</li>
+</ul>
+<h3 id="۱-نصب-وابستگی-ها">۱. نصب وابستگی‌ها</h3>
+<pre><code>npm install</code></pre>
+<p>اسکریپت <code>postinstall</code> به‌صورت خودکار <code>prisma generate</code> را اجرا می‌کند.</p>
+<h3 id="۲-ساخت-فایل-محیطی">۲. ساخت فایل محیطی</h3>
+<p>در ریشهٔ پروژه فایل <code>.env</code> بسازید. مقادیر واقعی secret را commit نکنید.</p>
+<pre><code>DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?schema=public"
+JWT_SECRET="replace-with-a-long-random-secret"
+PORT=3000
+ROUNDS=10
+ZARINPAL_MERCHANT_ID="your-merchant-id"
+ZARINPAL_ACCESS_TOKEN="your-access-token"
+FRONTEND_URL="http://localhost:5173"
+BACKEND_URL="http://localhost:3000"</code></pre>
+<p>مقدار <code>ENV_MODE</code> توسط اسکریپت‌های npm تعیین می‌شود و معمولاً نباید داخل <code>.env</code> نوشته شود.</p>
+<h3 id="۳-آماده-سازی-پایگاه-داده">۳. آماده‌سازی پایگاه داده</h3>
+<p>در محیط توسعه:</p>
+<pre><code>npx prisma migrate dev
+npx prisma generate</code></pre>
+<p>در استقرار، فقط migrationهای ثبت‌شده را اعمال کنید:</p>
+<pre><code>npx prisma migrate deploy</code></pre>
+<h3 id="۴-اجرای-توسعه">۴. اجرای توسعه</h3>
+<pre><code>npm run dev</code></pre>
+<p>Nodemon فایل <code>app.ts</code> را با <code>ENV_MODE=development</code> اجرا می‌کند. آدرس پیش‌فرض API برابر <code>http://localhost:3000</code> است.</p>
+<h3 id="۵-build-و-اجرای-production">۵. build و اجرای production</h3>
+<pre><code>npm run build
+npm start</code></pre>
+<p>خروجی JavaScript و source map در <code>dist/</code> قرار می‌گیرد و دستور start فایل <code>dist/app.js</code> را با حالت production اجرا می‌کند.</p>
+<h3 id="۶-تعیین-نخستین-ادمین">۶. تعیین نخستین ادمین</h3>
+<p>endpointی برای ساخت ادمین وجود ندارد. ابتدا کاربر عادی ثبت کنید، سپس از یک فرایند مدیریتی کنترل‌شده استفاده کنید:</p>
+<pre><code>UPDATE "User" SET "isAdmin" = true WHERE email = 'admin@example.com';</code></pre>
+<h2 id="تنظیم-متغیرهای-محیطی">تنظیم متغیرهای محیطی</h2>
+<table><thead><tr><th>متغیر</th><th>الزامی</th><th>کاربرد</th><th>رفتار پیش‌فرض</th></tr></thead><tbody><tr><td><code>DATABASE_URL</code></td><td>بله</td><td>اتصال PostgreSQL برای Prisma</td><td>بدون پیش‌فرض</td></tr><tr><td><code>JWT_SECRET</code></td><td>بله</td><td>امضا و بررسی JWT</td><td>بدون پیش‌فرض امن</td></tr><tr><td><code>ZARINPAL_MERCHANT_ID</code></td><td>بله</td><td>شناسهٔ پذیرندهٔ زرین‌پال</td><td>در صورت نبود، startup متوقف می‌شود</td></tr><tr><td><code>ZARINPAL_ACCESS_TOKEN</code></td><td>بله</td><td>احراز درخواست‌های SDK زرین‌پال</td><td>در صورت نبود، startup متوقف می‌شود</td></tr><tr><td><code>PORT</code></td><td>خیر</td><td>پورت Express</td><td><code>3000</code></td></tr><tr><td><code>ROUNDS</code></td><td>خیر</td><td>work factor مربوط به bcrypt</td><td><code>10</code></td></tr><tr><td><code>FRONTEND_URL</code></td><td>خیر</td><td>مبنای callback به <code>/payment/verify</code></td><td><code>http://localhost:3000</code></td></tr><tr><td><code>BACKEND_URL</code></td><td>خیر</td><td>در قرارداد فایل محیطی محلی وجود دارد</td><td>فعلاً در کد استفاده نشده</td></tr><tr><td><code>ENV_MODE</code></td><td>از طریق scripts</td><td>انتخاب تنظیمات development/production</td><td>توسط scripts تنظیم می‌شود</td></tr></tbody></table>
+<p>در production:</p>
+<ul>
+<li>CORS فقط <code>https://worldkarate.ir</code> و <code>https://www.worldkarate.ir</code> را با credentials می‌پذیرد؛</li>
+<li>کوکی <code>Secure</code> می‌شود، <code>SameSite=Lax</code> باقی می‌ماند و domain آن <code>worldkarate.ir</code> است؛</li>
+<li>زرین‌پال در حالت واقعی و با آدرس <code>https://www.zarinpal.com/pg/StartPay</code> استفاده می‌شود.</li>
+</ul>
+<p>در development، origin بازتاب داده می‌شود (<code>origin: true</code>)، کوکی Secure نیست و درگاه sandbox زرین‌پال انتخاب می‌شود.</p>
+<h2 id="معماری">معماری</h2>
+<p><img src="../../docs/diagrams/system-architecture.svg" alt="معماری اجرایی World Karate"></p>
+<p>برنامه یک <strong>modular monolith تک‌پردازه</strong> است. فایل <code>app.ts</code> middlewareهای مشترک را تنظیم می‌کند و routerهای کوچک Express را mount می‌کند. هر router مستقیماً با Prisma کار می‌کند و لایهٔ service/repository جداگانه‌ای وجود ندارد. این طراحی پروژه را کوچک و قابل دنبال‌کردن نگه داشته، اما قواعد مشترک و مرز تراکنش‌های دیتابیس باید در هر route مدیریت شوند.</p>
+<h3 id="ساختار-سورس">ساختار سورس</h3>
+<pre><code>app.ts                         ترکیب برنامه و mount مسیرها
+middleware/
+  authorization.ts            بررسی کوکی JWT و بارگذاری کاربر
+  adminAuth.ts                 کنترل ادمین بر اساس دیتابیس
+prisma/
+  schema.prisma                مدل مرجع داده
+  migrations/                  تاریخچهٔ migrationهای PostgreSQL
+  db.ts                        نمونهٔ مشترک PrismaClient
+schemas/                       schemaهای اعتبارسنجی Zod
+src/
+  auth/                        ثبت‌نام، ورود، بازیابی، پروفایل و خروج
+  courses/                     مسیرهای عمومی، کاربر و ادمین دوره
+  newsletter/                  ثبت مشترک خبرنامه
+  payment/                     checkout و تأیید زرین‌پال
+utils/                         JWT، cookie، environment، OTP و SDK
+dist/                          JavaScript کامپایل‌شده</code></pre>
+<h3 id="pipeline-هر-درخواست">pipeline هر درخواست</h3>
+<p>تمام درخواست‌ها به‌ترتیب از CORS، parser بدنهٔ JSON/urlencoded، Helmet و cookie parser عبور می‌کنند. endpointهای محافظت‌شده سپس middleware <code>authorization</code> را اجرا می‌کنند:</p>
+<ol>
+<li>خواندن <code>auth-token</code> از cookie؛  </li>
+<li>بررسی امضا با <code>JWT_SECRET</code>؛  </li>
+<li>یافتن کاربر فعلی با ایمیل موجود در token؛  </li>
+<li>قرار دادن رکورد کامل کاربر در <code>req.body.user</code>؛  </li>
+<li>ادامهٔ route و، برای مسیرهای ادمین، خواندن مجدد <code>isAdmin</code> از دیتابیس.</li>
+</ol>
+<p>به این ترتیب دیتابیس مرجع نهایی هویت و نقش است و client نمی‌تواند با تغییر body یا یک claim قدیمی خود را ادمین کند.</p>
+<h3 id="مرزهای-بیرونی">مرزهای بیرونی</h3>
+<ul>
+<li><strong>PostgreSQL</strong> تمام وضعیت پایدار برنامه را ذخیره می‌کند.</li>
+<li><strong>زرین‌پال</strong> authority پرداخت را صادر و پرداخت نهایی را تأیید می‌کند.</li>
+<li><strong>فرانت‌اند</strong> کاربر را به صفحهٔ درگاه هدایت می‌کند و پس از بازگشت، authority را به endpoint تأیید ارسال می‌کند.</li>
+<li><strong>ارسال ایمیل فعلاً متصل نیست.</strong> پکیج Nodemailer نصب شده، اما هیچ mailerای فراخوانی نمی‌شود.</li>
+</ul>
+<h2 id="مدل-داده">مدل داده</h2>
+<p><img src="../../docs/diagrams/entity-relationship.svg" alt="نمودار ارتباط موجودیت‌های World Karate"></p>
+<h3 id="مسئولیت-موجودیت-ها">مسئولیت موجودیت‌ها</h3>
+<table><thead><tr><th>موجودیت</th><th>مسئولیت و محدودیت مهم</th></tr></thead><tbody><tr><td><code>User</code></td><td>هویت، hash رمز، نقش ادمین، OTP و داده‌های verification. ایمیل و verification key یکتا هستند.</td></tr><tr><td><code>Course</code></td><td>رکورد کاتالوگ. قیمت عدد صحیح و بر حسب ریال است. <code>link</code> در دیتابیس nullable و <code>previewLinks</code> آرایهٔ text است.</td></tr><tr><td><code>Transaction</code></td><td>یک تلاش checkout متعلق به یک کاربر، شامل مبلغ کل، شناسه‌های پرداخت و وضعیت پرداخت.</td></tr><tr><td><code>UsersOnCourses</code></td><td>رابطهٔ مالکیت با کلید مرکب؛ هر کاربر هر دوره را حداکثر یک‌بار دارد.</td></tr><tr><td><code>TransactionsOnCourses</code></td><td>دوره‌های داخل یک تلاش checkout با کلید مرکب.</td></tr><tr><td><code>Newsletter</code></td><td>ایمیل یکتای خبرنامه و مستقل از User.</td></tr></tbody></table>
+<h3 id="معنای-رابطه-ها">معنای رابطه‌ها</h3>
+<ul>
+<li>هر کاربر صفر یا چند تراکنش دارد؛</li>
+<li>رابطهٔ User و Course از طریق <code>UsersOnCourses</code> چندبه‌چند است؛</li>
+<li>رابطهٔ Transaction و Course از طریق <code>TransactionsOnCourses</code> چندبه‌چند است؛</li>
+<li>رفتار حذف foreign keyها restrictive است؛ بنابراین حذف دوره‌ای که در مالکیت یا تراکنش استفاده شده ممکن است شکست بخورد؛</li>
+<li>join مربوط به تراکنش، محتوای سبد را نگه می‌دارد و <code>totalPrice</code> مبلغ زمان خرید را حتی پس از تغییر قیمت دوره حفظ می‌کند.</li>
+</ul>
+<h3 id="نکته-شناسه-های-پرداخت">نکتهٔ شناسه‌های پرداخت</h3>
+<p>در checkout، هر دو فیلد <code>authority</code> و <code>transactionId</code> ابتدا authority زرین‌پال را نگه می‌دارند. پس از تأیید موفق، <code>transactionId</code> با <code>ref_id</code> جایگزین می‌شود ولی <code>authority</code> کلید پایدار جست‌وجو باقی می‌ماند. همچنین در response اولیه، نام <code>transactionId</code> برای ID عددی داخلی استفاده شده است:</p>
+<ul>
+<li><code>transactionId</code> در response checkout: کلید اصلی عددی دیتابیس؛</li>
+<li><code>Transaction.transactionId</code> در مدل: authority خارجی پیش از پرداخت و <code>ref_id</code> پس از پرداخت.</li>
+</ul>
+<h2 id="احراز-هویت-و-مجوزها">احراز هویت و مجوزها</h2>
+<h3 id="کوکی-و-jwt">کوکی و JWT</h3>
+<p>نام کوکی <code>auth-token</code>، نوع آن HTTP-only، مسیر آن <code>/</code> و عمر آن ۱۰ روز است. JavaScript مرورگر نمی‌تواند آن را بخواند. درخواست‌های فرانت‌اند باید credentials را ارسال کنند؛ برای نمونه:</p>
+<pre><code>fetch(url, { credentials: "include" })</code></pre>
+<p>JWT شامل <code>email</code>، <code>firstName</code>، <code>lastName</code> و <code>isAdmin</code> است. token فعلاً expiration صریح ندارد و ماندگاری مرورگر عملاً با عمر cookie کنترل می‌شود. پس از ویرایش پروفایل JWT جدید ساخته می‌شود.</p>
+<h3 id="ثبت-نام-و-ورود">ثبت‌نام و ورود</h3>
+<p>ثبت‌نام نام، ایمیل و رمز را بررسی می‌کند، یکتایی ایمیل را می‌سنجد، نام‌ها را lowercase کرده و حرف اول را بزرگ می‌کند، رمز را hash می‌کند و یک verification key تصادفی ۸۳ کاراکتری می‌سازد. ثبت‌نام کاربر را خودکار login نمی‌کند.</p>
+<p>ورود برای ایمیل ناشناخته و رمز اشتباه یک پیام عمومی مشابه برمی‌گرداند. در موفقیت، cookie تنظیم و فیلدهای عمومی پروفایل برگردانده می‌شوند.</p>
+<h3 id="بازیابی-رمز">بازیابی رمز</h3>
+<p>رفتار فعلی چنین است:</p>
+<ol>
+<li><code>PUT /forget-password</code> یک OTP چهاررقمی تولید و روی User ذخیره می‌کند و آن را در JSON برمی‌گرداند؛  </li>
+<li><code>POST /validate-otp</code> عدد ارسالی را مقایسه می‌کند و در موفقیت همان cookie ورود عادی را صادر می‌کند؛  </li>
+<li><code>PUT /reset-password</code> با آن cookie محافظت می‌شود و رمز جدید منطبق را hash و ذخیره می‌کند.</li>
+</ol>
+<p>OTP فعلاً ایمیل نمی‌شود، expiration ندارد، تک‌مصرف نیست، rate limit ندارد و پس از استفاده پاک نمی‌شود. بنابراین تا اجرای اصلاحات بخش محدودیت‌ها باید این قابلیت را در مرحلهٔ توسعه در نظر گرفت.</p>
+<h3 id="ماتریس-دسترسی">ماتریس دسترسی</h3>
+<table><thead><tr><th>قابلیت</th><th>عمومی</th><th>کاربر واردشده</th><th>ادمین</th></tr></thead><tbody><tr><td>ثبت‌نام، ورود، بازیابی و خبرنامه</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>فهرست و جزئیات دوره</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>checkout و تأیید</td><td>verify عمومی؛ checkout نیازمند login</td><td>✓</td><td>✓</td></tr><tr><td>ویرایش پروفایل، خروج و دوره‌های خود</td><td></td><td>✓</td><td>✓</td></tr><tr><td>ایجاد و حذف دوره</td><td></td><td></td><td>✓</td></tr><tr><td>جست‌وجوی دوره‌ها با ایمیل کاربر</td><td></td><td></td><td>✓</td></tr></tbody></table>
+<h2 id="رفتار-قابلیت-ها">رفتار قابلیت‌ها</h2>
+<h3 id="دوره-ها-و-دسترسی">دوره‌ها و دسترسی</h3>
+<p>همه می‌توانند فهرست دوره‌ها و یک دوره را ببینند. رکورد دوره شامل عنوان، توضیح، قیمت ریالی، تصویر، لینک کامل اختیاری در دیتابیس و لینک‌های preview است. endpoint مالکیت، تمام دوره‌هایی را برمی‌گرداند که relation آن‌ها شامل کاربر فعلی است.</p>
+<p>endpoint ساخت دوره عنوان، توضیح، قیمت عددی غیرمنفی، تصویر و لینک را اعتبارسنجی می‌کند. با وجود nullable بودن <code>Course.link</code> در Prisma، API آن را اجباری می‌داند. <code>previewLinks</code> در route ساخت پشتیبانی نمی‌شود.</p>
+<h3 id="مدیریت">مدیریت</h3>
+<p>کنترل ادمین به claim داخل JWT اعتماد نمی‌کند و نقش را از دیتابیس می‌خواند. endpointهای ادمین دوره می‌سازند، دوره را با ID حذف می‌کنند و تلاش می‌کنند دوره‌های متعلق به ایمیل مشخص را نمایش دهند.</p>
+<h3 id="خبرنامه">خبرنامه</h3>
+<p>عضویت، ایمیل معتبر و غیروابسته به User را ذخیره می‌کند و duplicate را رد می‌کند. endpoint مشاهده، لغو عضویت یا ارسال campaign وجود ندارد.</p>
+<h3 id="پرداخت-و-اعطای-دوره">پرداخت و اعطای دوره</h3>
+<p>checkout شناسه‌های دوره را دریافت می‌کند، دوره‌های واقعی و قیمت آن‌ها را از دیتابیس می‌خواند، سبد خالی/نامعتبر و دورهٔ از قبل خریداری‌شده را رد می‌کند و مبلغ را صرفاً در سرور محاسبه می‌کند. پس از دریافت authority، تراکنش پرداخت‌نشده و ردیف‌های دوره ساخته می‌شوند و URL درگاه به client می‌رسد.</p>
+<p>تأیید پرداخت تراکنش را با authority پیدا می‌کند و مبلغ ذخیره‌شده را برای verification سروربه‌سرور می‌فرستد. کد <code>100</code> وضعیت را paid، <code>ref_id</code> را ذخیره و مالکیت دوره‌ها را با رد duplicate ایجاد می‌کند. تراکنش قبلاً paid نیز بدون اعطای دوباره با موفقیت پاسخ می‌دهد.</p>
+<h2 id="مرجع-api">مرجع API</h2>
+<p>تمام bodyها و responseها JSON هستند. پیام‌ها عمدتاً فارسی‌اند. خطاهای پیش‌بینی‌نشده معمولاً <code>500</code> هستند.</p>
+<h3 id="فهرست-endpointها">فهرست endpointها</h3>
+<table><thead><tr><th>متد</th><th>مسیر</th><th>دسترسی</th><th>کاربرد</th></tr></thead><tbody><tr><td><code>POST</code></td><td><code>/register</code></td><td>عمومی</td><td>ساخت حساب</td></tr><tr><td><code>POST</code></td><td><code>/login</code></td><td>عمومی</td><td>ورود و تنظیم cookie</td></tr><tr><td><code>POST</code></td><td><code>/logout</code></td><td>کاربر</td><td>پاک‌کردن cookie</td></tr><tr><td><code>PUT</code></td><td><code>/profile</code></td><td>کاربر</td><td>ویرایش پروفایل خود</td></tr><tr><td><code>PUT</code></td><td><code>/forget-password</code></td><td>عمومی</td><td>تولید OTP</td></tr><tr><td><code>POST</code></td><td><code>/validate-otp</code></td><td>عمومی</td><td>بررسی OTP و صدور cookie</td></tr><tr><td><code>PUT</code></td><td><code>/reset-password</code></td><td>کاربر</td><td>تعیین رمز جدید</td></tr><tr><td><code>GET</code></td><td><code>/fetch-course</code></td><td>عمومی</td><td>فهرست دوره‌ها</td></tr><tr><td><code>GET</code></td><td><code>/fetch-course/:courseId</code></td><td>عمومی</td><td>یک دوره</td></tr><tr><td><code>POST</code></td><td><code>/create-course</code></td><td>ادمین</td><td>ساخت دوره</td></tr><tr><td><code>DELETE</code></td><td><code>/delete-course/:courseId</code></td><td>ادمین</td><td>حذف دوره</td></tr><tr><td><code>GET</code></td><td><code>/admin/fetch-course/:email</code></td><td>ادمین</td><td>دوره‌های یک کاربر</td></tr><tr><td><code>GET</code></td><td><code>/user/fetch-course</code></td><td>کاربر</td><td>دوره‌های کاربر فعلی</td></tr><tr><td><code>POST</code></td><td><code>/register-newsletter</code></td><td>عمومی</td><td>عضویت خبرنامه</td></tr><tr><td><code>POST</code></td><td><code>/payment/checkout</code></td><td>کاربر</td><td>ساخت تراکنش</td></tr><tr><td><code>POST</code></td><td><code>/payment/verify</code></td><td>عمومی</td><td>تأیید authority و اعطای دوره</td></tr></tbody></table>
+<h3 id="endpointهای-هویت">endpointهای هویت</h3>
+<h4 id="post-register"><code>POST /register</code></h4>
+<pre><code>{
+  "firstName": "Sara",
+  "lastName": "Ahmadi",
+  "email": "sara@example.com",
+  "password": "karate123"
+}</code></pre>
+<p>نام‌ها ۳ تا ۲۰ حرف/فاصله هستند. رمز حداقل ۸ کاراکتر و شامل حداقل یک حرف کوچک لاتین و یک رقم است. موفقیت <code>200</code> و <code>verificationKey</code>، ایمیل تکراری <code>409</code> و دادهٔ نامعتبر <code>400</code> می‌دهد.</p>
+<h4 id="post-login"><code>POST /login</code></h4>
+<pre><code>{ "email": "sara@example.com", "password": "karate123" }</code></pre>
+<p>در موفقیت <code>200</code>، کوکی <code>auth-token</code> و نام/نام خانوادگی/ایمیل عمومی کاربر برمی‌گردد. ورودی نامعتبر <code>400</code> و credential اشتباه <code>403</code> است.</p>
+<h4 id="post-logout"><code>POST /logout</code></h4>
+<p>نیازمند cookie است و با همان گزینه‌های cookie مقدار آن را خالی می‌کند. پاسخ <code>200</code> است.</p>
+<h4 id="put-profile"><code>PUT /profile</code></h4>
+<p>هر فیلد اختیاری است:</p>
+<pre><code>{ "firstName": "سارا", "lastName": "احمدی", "email": "new@example.com" }</code></pre>
+<p>نام‌ها ۳ تا ۲۰ حرف فارسی یا لاتین و بدون فاصله‌اند. موفقیت <code>200</code> و JWT تازه صادر می‌کند. conflict ایمیل فعلاً به <code>500</code> می‌رسد.</p>
+<h4 id="put-forget-password"><code>PUT /forget-password</code></h4>
+<pre><code>{ "email": "sara@example.com" }</code></pre>
+<p>در موفقیت <code>{ message, OTP }</code> با <code>200</code> برمی‌گردد. ایمیل نامعتبر <code>400</code> و ناشناخته <code>404</code> است؛ متن خطا برای جلوگیری از افشای حساب مشابه است.</p>
+<h4 id="post-validate-otp"><code>POST /validate-otp</code></h4>
+<pre><code>{ "email": "sara@example.com", "OTP": 4831 }</code></pre>
+<p><code>OTP</code> باید number بین ۱۰۰۰ تا ۹۹۹۹ باشد. موفقیت cookie می‌سازد و mismatch یا ورودی نامعتبر <code>400</code> است.</p>
+<h4 id="put-reset-password"><code>PUT /reset-password</code></h4>
+<pre><code>{ "newPassword": "newpass123", "repeatPassword": "newpass123" }</code></pre>
+<p>نیازمند cookie است. هر دو رمز باید با policy منطبق و با هم برابر باشند. پاسخ موفق <code>200</code> است.</p>
+<h3 id="endpointهای-دوره">endpointهای دوره</h3>
+<h4 id="get-fetch-course"><code>GET /fetch-course</code></h4>
+<p>آرایهٔ همهٔ دوره‌ها را با <code>200</code> می‌دهد. pagination، sort، filter یا projection وجود ندارد.</p>
+<h4 id="get-fetch-course-courseid"><code>GET /fetch-course/:courseId</code></h4>
+<p>یک دوره یا <code>404</code> می‌دهد. ID عددی نامعتبر هنگام فراخوانی Prisma به <code>400</code> تبدیل می‌شود.</p>
+<h4 id="post-create-course"><code>POST /create-course</code></h4>
+<pre><code>{
+  "title": "Advanced Kumite",
+  "description": "A complete advanced kumite training program.",
+  "price": 2500000,
+  "img": "https://cdn.example.com/kumite.jpg",
+  "link": "https://courses.example.com/kumite"
+}</code></pre>
+<p>نیازمند user و admin guard است. عنوان ۵–۵۰، توضیح ۲۰–۱۰۰۰ و قیمت number غیرمنفی است. <code>img</code> و <code>link</code> اجباری ولی URL-validate نشده‌اند. موفقیت <code>200</code> و رکورد ساخته‌شده را می‌دهد.</p>
+<h4 id="delete-delete-course-courseid"><code>DELETE /delete-course/:courseId</code></h4>
+<p>فقط ادمین. موفقیت <code>200</code>؛ ID ناشناخته/نامعتبر یا مانع foreign key فعلاً <code>500</code> می‌شود.</p>
+<h4 id="get-user-fetch-course"><code>GET /user/fetch-course</code></h4>
+<p>تمام رکوردهای دورهٔ متعلق به کاربر واردشده را می‌دهد.</p>
+<h4 id="get-admin-fetch-course-email"><code>GET /admin/fetch-course/:email</code></h4>
+<p>فقط ادمین. کاربر ناشناخته <code>400</code> است. <strong>ایراد فعلی:</strong> کد از join table فیلد <code>userId</code> را به‌جای <code>courseId</code> map می‌کند؛ نتیجه ممکن است اشتباه باشد.</p>
+<h3 id="خبرنامه">خبرنامه</h3>
+<h4 id="post-register-newsletter"><code>POST /register-newsletter</code></h4>
+<pre><code>{ "email": "reader@example.com" }</code></pre>
+<p>موفقیت <code>200</code> و ایمیل نامعتبر یا تکراری <code>400</code> است.</p>
+<h3 id="پرداخت">پرداخت</h3>
+<h4 id="post-payment-checkout"><code>POST /payment/checkout</code></h4>
+<pre><code>{ "courseIds": ["1", "2"] }</code></pre>
+<p>route انتظار آرایه دارد و هر مقدار را با <code>Number</code> تبدیل می‌کند. schema زاد ندارد و مقدار null/حذف‌شده/type اشتباه می‌تواند به خطای سرور برسد. اگر حداقل یک ID معتبر باشد، IDهای ناموجود بی‌صدا کنار گذاشته می‌شوند؛ duplicateها نیز با query دیتابیس ادغام می‌شوند.</p>
+<p>نمونهٔ پاسخ موفق:</p>
+<pre><code>{
+  "message": "در حال انتقال به درگاه پرداخت...",
+  "paymentUrl": "https://sandbox.zarinpal.com/pg/StartPay/A000...",
+  "authority": "A000...",
+  "transactionId": 42
+}</code></pre>
+<p>سبد خالی، کاملاً نامعتبر، دارای دورهٔ قبلاً خریداری‌شده یا درخواست ردشدهٔ gateway پاسخ <code>400</code> می‌دهد.</p>
+<h4 id="post-payment-verify"><code>POST /payment/verify</code></h4>
+<pre><code>{ "authority": "A000..." }</code></pre>
+<p>تراکنش ناموجود <code>404</code> است. کد <code>100</code> زرین‌پال پاسخ <code>200</code> می‌دهد، تراکنش را paid می‌کند و دوره‌ها را اعطا می‌کند. تراکنش قبلاً paid نیز <code>200</code> است. نتیجهٔ ناموفق gateway پاسخ <code>400</code> دارد. route عمومی است چون endpoint تکمیل پرداخت محسوب می‌شود و authority معتبر تراکنش را مشخص می‌کند.</p>
+<h2 id="چرخه-پرداخت">چرخهٔ پرداخت</h2>
+<p><img src="../../docs/diagrams/payment-sequence.svg" alt="نمودار توالی پرداخت World Karate"></p>
+<p>دو relation پایدار هدف متفاوت دارند:</p>
+<ul>
+<li><code>TransactionsOnCourses</code>: این checkout قصد خرید چه دوره‌هایی را داشت؟</li>
+<li><code>UsersOnCourses</code>: اکنون کاربر مجاز به دسترسی به چه دوره‌هایی است؟</li>
+</ul>
+<p>تنها تأیید موفق، course IDهای تراکنش را به مالکیت منتقل می‌کند؛ در نتیجه checkout پرداخت‌نشده دسترسی نمی‌دهد. شاخهٔ already-paid و کلید مرکب مالکیت، تکرار verify را تا حد زیادی idempotent می‌کند.</p>
+<p>به‌روزرسانی وضعیت تراکنش و ساخت مالکیت‌ها فعلاً دو عملیات جدا هستند و داخل یک <code>prisma.$transaction</code> اجرا نمی‌شوند. خرابی بین این دو می‌تواند تراکنش paid بدون همهٔ دسترسی‌ها بسازد؛ تا اتمیک‌شدن، فرایند reconciliation لازم است.</p>
+<h2 id="اعتبارسنجی-و-خطاها">اعتبارسنجی و خطاها</h2>
+<p>Zod ثبت‌نام، ورود، بازیابی/تغییر رمز، پروفایل و ساخت دوره را بررسی می‌کند. پرداخت و پارامترهای عددی URL دستی یا ضمنی validate می‌شوند.</p>
+<table><thead><tr><th>status</th><th>معنای رایج</th></tr></thead><tbody><tr><td><code>200</code></td><td>موفقیت create/update/read؛ API فعلاً از <code>201</code> استفاده نمی‌کند</td></tr><tr><td><code>400</code></td><td>validation، سبد/پرداخت نامعتبر، OTP اشتباه یا course lookup بد</td></tr><tr><td><code>403</code></td><td>ورود ناموفق یا access denied، با توجه به ایراد ترتیب middleware</td></tr><tr><td><code>404</code></td><td>دوره، ایمیل بازیابی یا تراکنش ناموجود</td></tr><tr><td><code>409</code></td><td>ایمیل ثبت‌نام تکراری</td></tr><tr><td><code>500</code></td><td>خطای مدیریت‌نشدهٔ Prisma، gateway یا server</td></tr></tbody></table>
+<p>گاهی object خام خطای Prisma در JSON قرار می‌گیرد. در production باید خطاها normalize شوند و جزئیات داخلی به client نرسند.</p>
+<h2 id="امنیت">امنیت</h2>
+<h3 id="کنترل-های-موجود">کنترل‌های موجود</h3>
+<ul>
+<li>hash رمز با bcrypt؛</li>
+<li>cookie از نوع HTTP-only و در production دارای <code>Secure</code>؛</li>
+<li>بررسی امضای JWT و بارگذاری تازهٔ user از دیتابیس؛</li>
+<li>بررسی ادمین از دیتابیس؛</li>
+<li>headerهای Helmet و allowlist تولید CORS؛</li>
+<li>محاسبهٔ مبلغ پرداخت در سرور و verification سروربه‌سرور؛</li>
+<li>کلیدهای یکتا/مرکب برای جلوگیری از account، subscriber، authority و ownership تکراری؛</li>
+<li>پیام عمومی ورود برای کاهش account enumeration.</li>
+</ul>
+<h3 id="الزامات-عملیاتی">الزامات عملیاتی</h3>
+<ul>
+<li><code>JWT_SECRET</code> با entropy بالا تولید و rotation آن برنامه‌ریزی شود؛</li>
+<li><code>.env</code> خارج از version control و secretها در secret manager نگهداری شوند؛</li>
+<li>production فقط روی HTTPS باشد؛</li>
+<li>دسترسی شبکهٔ دیتابیس محدود، backup و در صورت نیاز TLS فعال باشد؛</li>
+<li>credentialهای sandbox و production زرین‌پال جدا باشند؛</li>
+<li>روی login، register، OTP، newsletter و payment rate limit اعمال شود؛</li>
+<li>payload کامل gateway و error حساس در production log نشود.</li>
+</ul>
+<h2 id="ساخت-استقرار-و-عملیات">ساخت، استقرار و عملیات</h2>
+<h3 id="فرمان-ها">فرمان‌ها</h3>
+<table><thead><tr><th>فرمان</th><th>نتیجه</th></tr></thead><tbody><tr><td><code>npm run dev</code></td><td>اجرای Nodemon روی TypeScript در development</td></tr><tr><td><code>npm run build</code></td><td>اجرای <code>tsc</code> و تولید <code>dist/</code></td></tr><tr><td><code>npm start</code></td><td>اجرای نسخهٔ کامپایل‌شده در production</td></tr><tr><td><code>npm test</code></td><td>placeholder ناموفق؛ تستی وجود ندارد</td></tr><tr><td><code>npx prisma generate</code></td><td>بازسازی Prisma Client</td></tr><tr><td><code>npx prisma migrate dev</code></td><td>توسعه/اعمال migration محلی</td></tr><tr><td><code>npx prisma migrate deploy</code></td><td>اعمال migrationهای commitشده در استقرار</td></tr><tr><td><code>npx prisma studio</code></td><td>مرورگر محلی دیتابیس؛ نباید عمومی شود</td></tr></tbody></table>
+<p>پروژه هنگام تولید این مستند با <code>npm run build</code> با موفقیت کامپایل شد.</p>
+<h3 id="چک-لیست-production">چک‌لیست production</h3>
+<ol>
+<li>PostgreSQL و user کم‌دسترسی برنامه را بسازید؛  </li>
+<li>secretهای الزامی و <code>FRONTEND_URL</code> صحیح را تنظیم کنید؛  </li>
+<li><code>npm ci</code> را اجرا کنید؛  </li>
+<li><code>npx prisma migrate deploy</code> را در مرحلهٔ کنترل‌شدهٔ release اجرا کنید؛  </li>
+<li><code>npm run build</code> و سپس <code>npm start</code> را اجرا کنید؛  </li>
+<li>برنامه را پشت reverse proxy/load balancer دارای HTTPS قرار دهید؛  </li>
+<li>origin فرانت‌اند، domain cookie و routing را با مقادیر hard-coded production تطبیق دهید؛  </li>
+<li>process supervisor، log ساختاریافته، health/readiness، metric، alert و backup اضافه کنید؛  </li>
+<li>یک خرید کم‌مبلغ production انجام دهید و ساخت ownership را بررسی کنید.</li>
+</ol>
+<h3 id="مقیاس-پذیری">مقیاس‌پذیری</h3>
+<p>API به‌جز PostgreSQL و gateway خارجی stateless است؛ چند replica می‌توانند دیتابیس مشترک داشته باشند و JWT cookie نیازمند sticky session نیست. پیش از افزایش write scale، نهایی‌سازی پرداخت را atomic کنید و محدودیت connection یا pooler را در نظر بگیرید؛ هر process از Prisma connection pool خود استفاده می‌کند.</p>
+<h2 id="آزمون-و-رفع-اشکال">آزمون و رفع اشکال</h2>
+<h3 id="smoke-test-پیشنهادی">smoke test پیشنهادی</h3>
+<ol>
+<li>ثبت‌نام و ورود و ذخیره‌شدن cookie را بررسی کنید؛  </li>
+<li>کاربر آزمایشی را ادمین و یک دوره ایجاد کنید؛  </li>
+<li>فهرست عمومی و جزئیات دوره را بخوانید؛  </li>
+<li>در sandbox checkout را کامل و authority را verify کنید؛  </li>
+<li><code>Transaction.isPaid=true</code> و حضور دوره در <code>/user/fetch-course</code> را بررسی کنید؛  </li>
+<li>verify را دوباره بفرستید و نبود ownership تکراری را تأیید کنید.</li>
+</ol>
+<h3 id="خطاهای-رایج">خطاهای رایج</h3>
+<table><thead><tr><th>نشانه</th><th>علت یا اقدام محتمل</th></tr></thead><tbody><tr><td>برنامه پیش از listen خطا می‌دهد</td><td>merchant ID یا access token زرین‌پال وجود ندارد</td></tr><tr><td>Prisma وصل نمی‌شود</td><td><code>DATABASE_URL</code>، شبکه، credential و migrationها را بررسی کنید</td></tr><tr><td>مرورگر login نمی‌ماند</td><td><code>credentials: include</code>، HTTPS، CORS، domain cookie و <code>ENV_MODE</code> را بررسی کنید</td></tr><tr><td>callback توسعه به برنامهٔ اشتباه می‌رود</td><td><code>FRONTEND_URL</code> را تنظیم کنید؛ fallback پورت ۳۰۰۰ است</td></tr><tr><td>درگاه اشتباه sandbox/production باز می‌شود</td><td>فقط مقدار دقیق <code>development</code> sandbox را فعال می‌کند</td></tr><tr><td>حذف دوره <code>500</code> می‌دهد</td><td>احتمالاً join row وابسته وجود دارد</td></tr><tr><td>نتیجهٔ admin user-course غلط است</td><td>ایراد شناخته‌شدهٔ <code>userId</code>/<code>courseId</code></td></tr><tr><td>typeهای Prisma قدیمی‌اند</td><td><code>npx prisma generate</code> و سپس build اجرا شود</td></tr></tbody></table>
+<h2 id="محدودیت-ها-و-گام-های-بعدی">محدودیت‌ها و گام‌های بعدی</h2>
+<p>اولویت موارد زیر بر اساس ریسک و اثر است.</p>
+<h3 id="امنیت-و-صحت-حیاتی">امنیت و صحت حیاتی</h3>
+<ol>
+<li><strong>بازیابی رمز را کامل کنید:</strong> OTP را با سرویس ایمیل ارسال و هرگز در JSON برنگردانید؛ hash، expiry، شمارندهٔ تلاش و purpose ذخیره و پس از مصرف پاک کنید. token بازیابی نباید cookie ورود عمومی باشد.  </li>
+<li><strong>برای JWT انقضا و lifecycle تعریف کنید:</strong> <code>expiresIn</code>، rotation/revocation و invalidation پس از تغییر رمز.  </li>
+<li><strong>ترتیب response در middleware را اصلاح کنید:</strong> <code>res.json(...).status(403)</code> پیش از تعیین status پاسخ را می‌فرستد؛ باید <code>res.status(403).json(...)</code> باشد. مسیر user-not-found نیز همین مشکل را دارد. نتیجهٔ nullable <code>findUnique</code> پیش از destructure بررسی شود.  </li>
+<li><strong>نهایی‌سازی پرداخت را atomic کنید:</strong> تغییر تراکنش و اعطای مالکیت داخل <code>prisma.$transaction</code> باشد و recovery محلی پس از موفقیت gateway تعریف شود.  </li>
+<li><strong>ورودی پرداخت را سخت‌گیرانه validate کنید:</strong> آرایهٔ غیرخالی و یکتای positive integer و رد کامل سبد اگر حتی یک ID وجود ندارد.  </li>
+<li><strong>جست‌وجوی دورهٔ کاربر توسط ادمین را اصلاح کنید:</strong> <code>courseId</code> به‌جای <code>userId</code> map شود یا relational filter endpoint کاربر استفاده شود.</li>
+</ol>
+<h3 id="بلوغ-api-و-عملیات">بلوغ API و عملیات</h3>
+<ol>
+<li>دربارهٔ verification حساب تصمیم بگیرید؛ <code>verified</code>/<code>verificationKey</code> را کامل و enforce یا حذف کنید.  </li>
+<li>برای درخواست‌های state-changing مبتنی بر cookie، CSRF protection یا policy صریح same-site اضافه کنید.  </li>
+<li>rate limit، envelope یکسان خطا، request ID، log ساختاریافته و health/readiness اضافه کنید.  </li>
+<li>exception خام را به client ندهید و uniqueness/not-found/foreign-key را به <code>4xx</code> امن map کنید.  </li>
+<li><code>img</code>/<code>link</code> را URL-validate، <code>previewLinks</code> را در صورت نیاز محصول پشتیبانی و nullable بودن link را با API هماهنگ کنید.  </li>
+<li>pagination و response projection اضافه کنید؛ endpoint عمومی فعلاً تمام فیلدها، از جمله لینک کامل دوره، را می‌دهد.  </li>
+<li>تاریخچه/وضعیت تراکنش برای کاربر و reconciliation برای ادمین اضافه کنید.  </li>
+<li>برای خبرنامه unsubscribe و metadata رضایت اضافه کنید.  </li>
+<li>تست unit، integration، authorization و idempotency پرداخت اضافه و <code>npm test</code> و CI را به آن متصل کنید.</li>
+</ol>
+<p>---</p>
+<p><strong>منابع مرجع سند:</strong> رفتار از <code>app.ts</code>، پوشه‌های <code>src/</code>، <code>middleware/</code>، <code>schemas/</code> و <code>utils/</code>، فایل <code>prisma/schema.prisma</code>، migrationهای SQL، <code>package.json</code> و <code>tsconfig.json</code> استخراج شده است. اگر کد اجرایی و سند متفاوت شدند، کد و migration اعمال‌شده حقیقت runtime هستند و سند باید در همان تغییر به‌روز شود.</p>
+</main></body></html>

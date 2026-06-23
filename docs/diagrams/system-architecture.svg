@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="820" viewBox="0 0 1400 820">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#081426"/><stop offset="1" stop-color="#132a3d"/></linearGradient>
+    <linearGradient id="api" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f97316"/><stop offset="1" stop-color="#ef4444"/></linearGradient>
+    <filter id="shadow"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-opacity=".28"/></filter>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#8ed8e7"/></marker>
+    <style>
+      .title{font:700 34px 'Segoe UI',Arial;fill:#fff}.sub{font:400 17px 'Segoe UI',Arial;fill:#a9c7d2}.h{font:700 21px 'Segoe UI',Arial;fill:#fff}.t{font:400 16px 'Segoe UI',Arial;fill:#d9edf2}.small{font:400 14px 'Segoe UI',Arial;fill:#b9d3da}.box{stroke:#386477;stroke-width:1.5;rx:18;filter:url(#shadow)}.line{stroke:#8ed8e7;stroke-width:3;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+  <rect width="1400" height="820" fill="url(#bg)"/>
+  <circle cx="1280" cy="80" r="190" fill="#0ea5e9" opacity=".07"/><circle cx="70" cy="760" r="260" fill="#f97316" opacity=".07"/>
+  <text x="70" y="68" class="title">World Karate Backend · Runtime Architecture</text>
+  <text x="70" y="99" class="sub">A single Express API coordinates identity, course access, payments, and persistence.</text>
+
+  <rect x="70" y="178" width="245" height="178" fill="#12374a" class="box"/>
+  <text x="98" y="219" class="h">Web client</text><text x="98" y="253" class="t">worldkarate.ir</text><text x="98" y="281" class="small">JSON requests</text><text x="98" y="306" class="small">auth-token cookie</text><text x="98" y="331" class="small">payment redirects</text>
+
+  <rect x="430" y="145" width="540" height="475" fill="#102b3b" class="box"/>
+  <rect x="430" y="145" width="540" height="76" fill="url(#api)" rx="18"/><rect x="430" y="202" width="540" height="19" fill="#ef4444"/>
+  <text x="462" y="191" class="h">Express 4 + TypeScript API</text>
+  <rect x="468" y="255" width="205" height="95" fill="#173f52" class="box"/><text x="492" y="289" class="h">HTTP layer</text><text x="492" y="320" class="small">CORS · Helmet · JSON</text><text x="492" y="341" class="small">cookies · route mounting</text>
+  <rect x="725" y="255" width="205" height="95" fill="#173f52" class="box"/><text x="749" y="289" class="h">Guards</text><text x="749" y="320" class="small">JWT authorization</text><text x="749" y="341" class="small">database-backed admin</text>
+  <rect x="468" y="393" width="462" height="174" fill="#173f52" class="box"/>
+  <text x="492" y="429" class="h">Feature routers</text>
+  <text x="492" y="463" class="t">Identity &amp; profile</text><text x="705" y="463" class="t">Course catalog &amp; access</text>
+  <text x="492" y="497" class="t">Password recovery</text><text x="705" y="497" class="t">Checkout &amp; verification</text>
+  <text x="492" y="531" class="t">Newsletter</text><text x="705" y="531" class="t">Admin course operations</text>
+
+  <rect x="1085" y="166" width="245" height="170" fill="#12374a" class="box"/>
+  <text x="1113" y="207" class="h">PostgreSQL</text><text x="1113" y="241" class="t">Prisma ORM</text><text x="1113" y="272" class="small">users · courses</text><text x="1113" y="297" class="small">transactions · ownership</text><text x="1113" y="322" class="small">newsletter</text>
+
+  <rect x="1085" y="437" width="245" height="170" fill="#12374a" class="box"/>
+  <text x="1113" y="478" class="h">Zarinpal</text><text x="1113" y="512" class="t">Payment API</text><text x="1113" y="543" class="small">request authority</text><text x="1113" y="568" class="small">hosted payment page</text><text x="1113" y="593" class="small">server-side verification</text>
+
+  <path d="M315 267 H420" class="line"/><path d="M970 270 H1075" class="line"/><path d="M970 520 H1075" class="line"/>
+  <path d="M1205 437 V367 H880 V383" class="line" opacity=".8"/>
+  <text x="70" y="727" class="h">Trust boundaries</text>
+  <text x="70" y="760" class="sub">The client never supplies the authoritative user identity or price: middleware reloads the user from PostgreSQL, and checkout recalculates totals from stored course prices.</text>
+  <text x="70" y="790" class="small">Deployment note: production cookies and CORS are bound to worldkarate.ir; development enables permissive origins and Zarinpal sandbox mode.</text>
+</svg>

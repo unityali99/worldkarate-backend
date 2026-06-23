@@ -8,7 +8,7 @@ const Course = z.object({
   description: z
     .string({ required_error: "Description is required" })
     .min(20, "Description should not be less than 20 characters")
-    .max(150, "Description should not be more than 150 characters"),
+    .max(1000, "Description should not be more than 1000 characters"),
   price: z
     .number({ required_error: "Number is requried" })
     .nonnegative("Price can't be negative"),

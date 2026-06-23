@@ -101,11 +101,21 @@ router.post("/", authorization, async (req: Request, res: Response) => {
     }
   } catch (error) {
     console.log(error);
+    const gatewayError =
+      error &&
+      typeof error === "object" &&
+      "response" in error &&
+      error.response &&
+      typeof error.response === "object" &&
+      "data" in error.response
+        ? error.response.data
+        : undefined;
+
     return res
       .status(500)
       .json({
         message: "خطا در پردازش درخواست پرداخت",
-        error: error instanceof Error ? error.message : "خطای نامشخص",
+        error: gatewayError || (error instanceof Error ? error.message : "خطای نامشخص"),
       })
       .send();
   }

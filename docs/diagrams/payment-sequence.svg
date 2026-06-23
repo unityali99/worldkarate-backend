@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1450" height="980" viewBox="0 0 1450 980">
+  <defs><linearGradient id="b" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071522"/><stop offset="1" stop-color="#183648"/></linearGradient><marker id="a" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#8ed8e7"/></marker><style>.title{font:700 34px 'Segoe UI',Arial;fill:#fff}.sub{font:400 16px 'Segoe UI',Arial;fill:#b9d4dc}.actor{font:700 19px 'Segoe UI',Arial;fill:#fff}.msg{font:400 15px 'Segoe UI',Arial;fill:#e4f3f6}.note{font:400 14px 'Segoe UI',Arial;fill:#d2e8ed}.life{stroke:#4d7888;stroke-width:2;stroke-dasharray:8 8}.arr{stroke:#8ed8e7;stroke-width:2.5;fill:none;marker-end:url(#a)}.ret{stroke:#fbbf24;stroke-width:2.5;stroke-dasharray:7 5;fill:none;marker-end:url(#a)}.box{fill:#12394b;stroke:#3f7588;stroke-width:1.5}.ok{fill:#0f766e;stroke:#5eead4}.warn{fill:#7c2d12;stroke:#fb923c}</style></defs>
+  <rect width="1450" height="980" fill="url(#b)"/><text x="55" y="58" class="title">Course Purchase · Checkout and Verification</text><text x="55" y="88" class="sub">The transaction records the intended basket before the customer leaves for the payment gateway.</text>
+  <g><rect x="50" y="125" width="210" height="58" rx="14" class="box"/><text x="113" y="161" class="actor">Web client</text><rect x="355" y="125" width="210" height="58" rx="14" class="box"/><text x="410" y="161" class="actor">Express API</text><rect x="660" y="125" width="210" height="58" rx="14" class="box"/><text x="718" y="161" class="actor">PostgreSQL</text><rect x="965" y="125" width="210" height="58" rx="14" class="box"/><text x="1030" y="161" class="actor">Zarinpal</text><rect x="1270" y="125" width="130" height="58" rx="14" class="box"/><text x="1295" y="161" class="actor">Customer</text></g>
+  <g><path d="M155 183 V930" class="life"/><path d="M460 183 V930" class="life"/><path d="M765 183 V930" class="life"/><path d="M1070 183 V930" class="life"/><path d="M1335 183 V930" class="life"/></g>
+  <path d="M155 230 H450" class="arr"/><text x="180" y="220" class="msg">1 · POST /payment/checkout { courseIds[] } + auth cookie</text>
+  <path d="M460 280 H755" class="arr"/><text x="490" y="270" class="msg">2 · Reload user; fetch canonical courses and prices</text>
+  <path d="M755 325 H470" class="ret"/><text x="520" y="315" class="msg">Course rows + ownership checks</text>
+  <rect x="370" y="350" width="485" height="67" rx="12" class="box"/><text x="392" y="378" class="note">Reject empty/invalid baskets and any course already owned.</text><text x="392" y="401" class="note">Calculate totalPrice exclusively from PostgreSQL values.</text>
+  <path d="M460 456 H1060" class="arr"/><text x="550" y="446" class="msg">3 · Create payment request (amount, callback URL, email)</text>
+  <path d="M1070 505 H470" class="ret"/><text x="670" y="495" class="msg">code 100 + authority</text>
+  <path d="M460 554 H755" class="arr"/><text x="490" y="544" class="msg">4 · Insert unpaid Transaction + basket join rows</text>
+  <path d="M460 610 H165" class="ret"/><text x="198" y="600" class="msg">paymentUrl, authority, internal transactionId</text>
+  <path d="M155 660 H1325" class="arr"/><text x="490" y="650" class="msg">5 · Client sends customer to Zarinpal hosted page</text>
+  <path d="M1335 710 H1080" class="arr"/><text x="1110" y="700" class="msg">Customer completes payment</text>
+  <path d="M155 758 H450" class="arr"/><text x="174" y="748" class="msg">6 · POST /payment/verify { authority }</text>
+  <path d="M460 802 H1060" class="arr"/><text x="610" y="792" class="msg">Verify stored totalPrice + authority</text>
+  <path d="M1070 845 H470" class="ret"/><text x="680" y="835" class="msg">code 100 + ref_id</text>
+  <path d="M460 892 H755" class="arr"/><text x="478" y="882" class="msg">7 · Mark paid; replace transactionId with ref_id; grant courses</text>
+  <rect x="900" y="875" width="475" height="70" rx="12" class="ok"/><text x="925" y="904" class="note">Idempotency guard: an already-paid transaction returns success</text><text x="925" y="928" class="note">without verifying or granting ownership a second time.</text>
+</svg>

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="980" viewBox="0 0 1500 980">
+  <defs>
+    <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071522"/><stop offset="1" stop-color="#173444"/></linearGradient>
+    <filter id="s"><feDropShadow dx="0" dy="7" stdDeviation="9" flood-opacity=".3"/></filter>
+    <style>.title{font:700 34px 'Segoe UI',Arial;fill:#fff}.sub{font:400 16px 'Segoe UI',Arial;fill:#b9d4dc}.eh{font:700 20px 'Segoe UI',Arial;fill:#fff}.f{font:400 14px Consolas,monospace;fill:#dceef2}.pk{fill:#fbbf24}.fk{fill:#7dd3fc}.card{fill:#123447;stroke:#46788b;stroke-width:1.5;filter:url(#s)}.head{fill:#ef5b32}.rel{stroke:#8ed8e7;stroke-width:2.5;fill:none}.c{font:700 15px 'Segoe UI',Arial;fill:#fff}</style>
+  </defs>
+  <rect width="1500" height="980" fill="url(#bg2)"/>
+  <text x="60" y="58" class="title">World Karate · Entity Relationship Diagram</text>
+  <text x="60" y="88" class="sub">Derived from prisma/schema.prisma · PostgreSQL physical model</text>
+
+  <!-- relations first -->
+  <path d="M390 330 H505" class="rel"/><text x="402" y="319" class="c">1</text><text x="478" y="319" class="c">0..*</text>
+  <path d="M755 330 H865" class="rel"/><text x="765" y="319" class="c">0..*</text><text x="843" y="319" class="c">1</text>
+  <path d="M390 520 C520 520 430 745 555 745" class="rel"/><text x="405" y="511" class="c">1</text><text x="526" y="735" class="c">0..*</text>
+  <path d="M865 520 C780 520 850 745 795 745" class="rel"/><text x="845" y="511" class="c">1</text><text x="800" y="735" class="c">0..*</text>
+  <path d="M1115 520 C1200 520 1190 745 1085 745" class="rel"/><text x="1125" y="511" class="c">1</text><text x="1092" y="735" class="c">0..*</text>
+
+  <!-- User -->
+  <rect x="60" y="130" width="330" height="470" rx="16" class="card"/><rect x="60" y="130" width="330" height="52" rx="16" class="head"/><rect x="60" y="165" width="330" height="17" class="head"/><text x="84" y="164" class="eh">User</text>
+  <text x="84" y="215" class="f pk">PK  id               Int</text><text x="84" y="245" class="f">    firstName        String</text><text x="84" y="275" class="f">    lastName         String</text><text x="84" y="305" class="f">UQ  email            String</text><text x="84" y="335" class="f">    password         String</text><text x="84" y="365" class="f">    verified         Boolean=false</text><text x="84" y="395" class="f">UQ  verificationKey  String</text><text x="84" y="425" class="f">    OTP              Int?</text><text x="84" y="455" class="f">    isAdmin          Boolean=false</text><text x="84" y="485" class="f">    createdAt        DateTime</text><text x="84" y="515" class="f">    updatedAt        DateTime</text>
+
+  <!-- UsersOnCourses -->
+  <rect x="505" y="205" width="250" height="250" rx="16" class="card"/><rect x="505" y="205" width="250" height="52" rx="16" fill="#0891b2"/><rect x="505" y="240" width="250" height="17" fill="#0891b2"/><text x="528" y="239" class="eh">UsersOnCourses</text>
+  <text x="528" y="290" class="f pk">PK/FK userId    Int</text><text x="528" y="322" class="f pk">PK/FK courseId  Int</text><text x="528" y="354" class="f">      createdAt DateTime</text><text x="528" y="386" class="f">      updatedAt DateTime</text><text x="528" y="426" class="sub">Purchased-course ownership</text>
+
+  <!-- Course -->
+  <rect x="865" y="130" width="250" height="470" rx="16" class="card"/><rect x="865" y="130" width="250" height="52" rx="16" class="head"/><rect x="865" y="165" width="250" height="17" class="head"/><text x="888" y="164" class="eh">Course</text>
+  <text x="888" y="215" class="f pk">PK id           Int</text><text x="888" y="247" class="f">   title        String</text><text x="888" y="279" class="f">   description  String</text><text x="888" y="311" class="f">   price        Int (IRR)</text><text x="888" y="343" class="f">   img          String</text><text x="888" y="375" class="f">   link         String?</text><text x="888" y="407" class="f">   previewLinks String[]</text>
+
+  <!-- Newsletter -->
+  <rect x="1195" y="130" width="245" height="180" rx="16" class="card"/><rect x="1195" y="130" width="245" height="52" rx="16" fill="#7c3aed"/><rect x="1195" y="165" width="245" height="17" fill="#7c3aed"/><text x="1218" y="164" class="eh">Newsletter</text><text x="1218" y="218" class="f pk">PK id     Int</text><text x="1218" y="252" class="f">UQ email  String</text><text x="1218" y="289" class="sub">Independent subscriber list</text>
+
+  <!-- Transaction -->
+  <rect x="555" y="665" width="240" height="265" rx="16" class="card"/><rect x="555" y="665" width="240" height="52" rx="16" fill="#059669"/><rect x="555" y="700" width="240" height="17" fill="#059669"/><text x="578" y="699" class="eh">Transaction</text>
+  <text x="578" y="750" class="f pk">PK id             Int</text><text x="578" y="780" class="f fk">FK userId         Int</text><text x="578" y="810" class="f">   isPaid          Boolean</text><text x="578" y="840" class="f">UQ transactionId  String</text><text x="578" y="870" class="f">UQ authority      String</text><text x="578" y="900" class="f">   totalPrice      Int</text>
+
+  <!-- TransactionsOnCourses -->
+  <rect x="835" y="665" width="250" height="250" rx="16" class="card"/><rect x="835" y="665" width="250" height="52" rx="16" fill="#0891b2"/><rect x="835" y="700" width="250" height="17" fill="#0891b2"/><text x="850" y="699" class="eh">TransactionsOnCourses</text>
+  <text x="858" y="750" class="f pk">PK/FK transactionId Int</text><text x="858" y="782" class="f pk">PK/FK courseId      Int</text><text x="858" y="814" class="f">      createdAt     DateTime</text><text x="858" y="846" class="f">      updatedAt     DateTime</text><text x="858" y="886" class="sub">Immutable checkout contents</text>
+
+  <text x="1120" y="710" class="sub">Legend</text><circle cx="1132" cy="743" r="7" fill="#fbbf24"/><text x="1150" y="749" class="sub">primary / composite key</text><circle cx="1132" cy="777" r="7" fill="#7dd3fc"/><text x="1150" y="783" class="sub">foreign key</text><text x="1120" y="822" class="sub">Deletion is RESTRICT by default</text><text x="1120" y="850" class="sub">on all represented relations.</text>
+</svg>

@@ -20,14 +20,18 @@ const adminFetchCourses_1 = __importDefault(require("./src/courses/admin/adminFe
 const deleteCourse_1 = __importDefault(require("./src/courses/crud/deleteCourse"));
 const registerNewsletter_1 = __importDefault(require("./src/newsletter/registerNewsletter"));
 const checkout_1 = __importDefault(require("./src/payment/checkout"));
+const verify_1 = __importDefault(require("./src/payment/verify"));
 const authorization_1 = require("./middleware/authorization");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const adminAuth_1 = require("./middleware/adminAuth");
+const cookieOptions_1 = require("./utils/cookieOptions");
 require("dotenv").config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 const corsOptions = {
-    origin: true,
+    origin: cookieOptions_1.isProduction
+        ? ["https://worldkarate.ir", "https://www.worldkarate.ir"]
+        : true,
     credentials: true,
     optionsSuccessStatus: 200,
 };
@@ -52,7 +56,8 @@ app.use("/delete-course", authorization_1.authorization, adminAuth_1.adminAuth, 
 app.use("/admin/fetch-course", authorization_1.authorization, adminAuth_1.adminAuth, adminFetchCourses_1.default);
 app.use("/user/fetch-course", authorization_1.authorization, fetchUserCourses_1.default);
 //payment
-app.use("/checkout", authorization_1.authorization, checkout_1.default);
+app.use("/payment/checkout", checkout_1.default);
+app.use("/payment/verify", verify_1.default);
 // Others
 app.use("/register-newsletter", registerNewsletter_1.default);
 app.listen(port, () => {

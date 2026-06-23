@@ -14,9 +14,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const db_1 = __importDefault(require("../../prisma/db"));
-const generateUniqueTransactionId_1 = require("../../utils/generateUniqueTransactionId");
+const zarinpal_1 = require("../../utils/zarinpal");
+const authorization_1 = require("../../middleware/authorization");
+const cookieOptions_1 = require("../../utils/cookieOptions");
 const router = (0, express_1.Router)();
-router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+router.post("/", authorization_1.authorization, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const body = req.body;
         const { user, courseIds } = body;
@@ -41,35 +43,70 @@ router.post("/", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
                 return res
                     .status(400)
                     .json({
-                    message: "یکی یا چند تا از دوره های سبد خرید قبلا خریداری شده اند",
+                    message: "یک یا چند مورد از دوره های سبد خرید قبلا خریداری شده است",
                 })
                     .send();
         }
-        const transactionId = yield (0, generateUniqueTransactionId_1.generateUniqueTransactionId)();
-        const transaction = yield db_1.default.transaction.create({
-            data: {
-                isPaid: true,
-                transactionId,
-                totalPrice,
-                user: { connect: { id: user.id } },
-                transactionsOnCourses: { createMany: { data: [...validCourseIds] } },
-            },
+        // Create payment request with Zarinpal FIRST to get the authority
+        const paymentRequest = yield zarinpal_1.zarinpal.payments.create({
+            amount: totalPrice,
+            description: `آکادمی کاراته سنسی یاری`,
+            callback_url: `${process.env.FRONTEND_URL || "http://localhost:3000"}/payment/verify`,
+            email: user.email,
         });
-        const newUserOnCourse = yield db_1.default.user.update({
-            where: { id: user.id },
-            data: { courses: { createMany: { data: [...validCourseIds] } } },
-        });
-        res
-            .status(200)
-            .json({ message: "پرداخت با موفقیت انجام شد", courses, transaction });
+        console.log("Payment request response:", JSON.stringify(paymentRequest, null, 2));
+        if (paymentRequest.data.code === 100) {
+            // Get authority from Zarinpal response
+            const authority = paymentRequest.data.authority;
+            // Create transaction record (initially unpaid) with Zarinpal's authority
+            const transaction = yield db_1.default.transaction.create({
+                data: {
+                    isPaid: false,
+                    transactionId: authority, // Store authority as transactionId
+                    totalPrice,
+                    authority,
+                    user: { connect: { id: user.id } },
+                    transactionsOnCourses: { createMany: { data: [...validCourseIds] } },
+                },
+            });
+            // Payment request successful, return payment URL
+            // Use sandbox URL for development, production URL for production
+            const baseUrl = cookieOptions_1.isProduction
+                ? "https://www.zarinpal.com/pg/StartPay"
+                : "https://sandbox.zarinpal.com/pg/StartPay";
+            const paymentUrl = `${baseUrl}/${authority}`;
+            console.log("Payment URL:", paymentUrl);
+            // Return payment URL in response
+            return res.status(200).json({
+                message: "در حال انتقال به درگاه پرداخت...",
+                paymentUrl,
+                authority,
+                transactionId: transaction.id,
+            });
+        }
+        else {
+            // Payment request failed
+            return res.status(400).json({
+                message: "خطا در ایجاد درخواست پرداخت. لطفا دوباره تلاش کنید.",
+                error: paymentRequest,
+            });
+        }
     }
     catch (error) {
         console.log(error);
+        const gatewayError = error &&
+            typeof error === "object" &&
+            "response" in error &&
+            error.response &&
+            typeof error.response === "object" &&
+            "data" in error.response
+            ? error.response.data
+            : undefined;
         return res
             .status(500)
             .json({
-            message: "پرداخت با خطا مواجه شد. درصورت برداشت از حساب، مبلغ کسر شده حداکثر تا 72 ساعت به حساب شما بازگشت خواهد خورد",
-            error,
+            message: "خطا در پردازش درخواست پرداخت",
+            error: gatewayError || (error instanceof Error ? error.message : "خطای نامشخص"),
         })
             .send();
     }

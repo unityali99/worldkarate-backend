@@ -1,0 +1,371 @@
+<!doctype html><html lang="en" dir="ltr"><head><meta charset="utf-8"><title>World Karate Backend</title><style>
+    @page { size: A4; margin: 17mm 15mm 18mm; }
+    @page:first { margin: 0; }
+    :root { --ink:#173142; --muted:#56717f; --brand:#e9572f; --cyan:#087f9a; --paper:#fff; --soft:#edf5f7; }
+    * { box-sizing:border-box; }
+    html { font-size:10.4pt; }
+    body { margin:0; color:var(--ink); font-family:'Segoe UI', Arial, sans-serif; line-height:1.63; background:var(--paper); }
+    .cover { height:297mm; margin:-17mm -15mm -18mm; padding:34mm 24mm; color:white; background:linear-gradient(145deg,#071522 0%,#13394c 70%,#e9572f 160%); position:relative; overflow:hidden; page-break-after:always; }
+    .cover:before,.cover:after { content:''; position:absolute; border-radius:50%; border:2px solid rgba(255,255,255,.1); }
+    .cover:before { width:155mm;height:155mm;right:-65mm;top:-42mm;box-shadow:0 0 0 20mm rgba(8,127,154,.08),0 0 0 40mm rgba(8,127,154,.05); }
+    .cover:after { width:110mm;height:110mm;left:-55mm;bottom:-38mm;box-shadow:0 0 0 17mm rgba(233,87,47,.08); }
+    .kicker { color:#79d4e4; text-transform:uppercase; letter-spacing:.18em; font-weight:700; font-size:11pt; margin-top:28mm; }
+    .cover h1 { font-size:36pt; line-height:1.15; margin:15mm 0 7mm; max-width:150mm; color:#fff; }
+    .cover .subtitle { font-size:17pt; color:#d7edf2; max-width:135mm; }
+    .cover .edition { position:absolute; bottom:28mm; left:24mm; color:#a9cbd4; font-size:10pt; }
+    .accent { width:24mm;height:3px;background:var(--brand);margin-top:11mm; }
+    main { max-width:100%; }
+    h1,h2,h3,h4 { color:#102f40; line-height:1.25; break-after:avoid; }
+    h2 { font-size:22pt; margin:10mm 0 4mm; padding-bottom:2.5mm; border-bottom:2px solid #d5e8ed; page-break-before:always; }
+    h2:first-of-type { page-break-before:auto; }
+    h3 { font-size:15pt; margin:7mm 0 2.5mm; color:#0b7288; }
+    h4 { font-size:12pt; margin:5mm 0 2mm; color:#bd4527; }
+    p { margin:0 0 3.2mm; orphans:3; widows:3; }
+    a { color:#087f9a; text-decoration:none; }
+    strong { color:#102f40; }
+    code { direction:ltr; unicode-bidi:embed; font-family:Consolas,'Courier New',monospace; background:#eaf2f4; padding:.3mm 1.1mm; border-radius:3px; font-size:.9em; }
+    pre { direction:ltr; text-align:left; background:#0d2736; color:#d9edf2; padding:4mm; border-radius:7px; overflow:hidden; break-inside:avoid; line-height:1.45; }
+    pre code { background:none;color:inherit;padding:0;font-size:8.4pt;white-space:pre-wrap; }
+    blockquote { margin:4mm 0 7mm; padding:4mm 5mm; color:#385866; background:#edf5f7; border-left:4px solid var(--brand); border-radius:5px; }
+    ul,ol { margin:2mm 0 4mm; padding-left:7mm; }
+    li { margin:1.2mm 0; }
+    table { width:100%; border-collapse:collapse; margin:4mm 0 6mm; font-size:8.8pt; break-inside:auto; }
+    tr { break-inside:avoid; }
+    th { background:#12394b; color:white; font-weight:700; text-align:left; }
+    th,td { padding:2.2mm 2.5mm; border:1px solid #cddfe4; vertical-align:top; }
+    tbody tr:nth-child(even) { background:#f1f7f8; }
+    img { display:block; max-width:100%; max-height:238mm; margin:6mm auto 8mm; object-fit:contain; break-inside:avoid; }
+    hr { border:0;border-top:1px solid #cddfe4;margin:9mm 0; }
+    @media print { a { color:inherit; } }
+  </style></head><body>
+  <section class="cover"><div class="kicker">WORLD KARATE · BACKEND</div><h1>World Karate Backend</h1><div class="subtitle">Complete architecture, API, data, security, and deployment guide</div><div class="accent"></div><div class="edition">Edition 1.0 · Reviewed against the current codebase · June 2026</div></section>
+  <main><blockquote>Architecture, API, data model, operations, and deployment guide  <br><strong>Document edition:</strong> 1.0 · <strong>Code reviewed:</strong> 23 June 2026 · <strong>Application version:</strong> <code>1.0.0</code></blockquote>
+<p>World Karate Backend is the server-side application for the World Karate course platform. It exposes a JSON API for account registration and login, password recovery, profile maintenance, public course discovery, administrator course management, purchased-course access, newsletter registration, and Zarinpal checkout and payment verification.</p>
+<p>This guide documents what the current repository <strong>actually implements</strong>. Where the schema or dependencies suggest unfinished functionality, the difference is called out under <a href="#known-limitations-and-recommended-next-steps">Known limitations</a>.</p>
+<h2 id="contents">Contents</h2>
+<ol>
+<li><a href="#at-a-glance">At a glance</a></li>
+<li><a href="#quick-start">Quick start</a></li>
+<li><a href="#configuration">Configuration</a></li>
+<li><a href="#architecture">Architecture</a></li>
+<li><a href="#data-model">Data model</a></li>
+<li><a href="#authentication-and-authorization">Authentication and authorization</a></li>
+<li><a href="#functional-behavior">Functional behavior</a></li>
+<li><a href="#api-reference">API reference</a></li>
+<li><a href="#payment-lifecycle">Payment lifecycle</a></li>
+<li><a href="#validation-and-error-behavior">Validation and error behavior</a></li>
+<li><a href="#security-model">Security model</a></li>
+<li><a href="#build-deployment-and-operations">Build, deployment, and operations</a></li>
+<li><a href="#testing-and-troubleshooting">Testing and troubleshooting</a></li>
+<li><a href="#known-limitations-and-recommended-next-steps">Known limitations</a></li>
+</ol>
+<h2 id="at-a-glance">At a glance</h2>
+<table><thead><tr><th>Area</th><th>Implementation</th></tr></thead><tbody><tr><td>Runtime</td><td>Node.js, Express 4, TypeScript compiled to CommonJS</td></tr><tr><td>Persistence</td><td>PostgreSQL through Prisma 5</td></tr><tr><td>Authentication</td><td>JWT stored in an HTTP-only <code>auth-token</code> cookie</td></tr><tr><td>Passwords</td><td>bcrypt, configurable cost factor</td></tr><tr><td>Validation</td><td>Zod request schemas</td></tr><tr><td>Payments</td><td>Zarinpal SDK; sandbox in development</td></tr><tr><td>HTTP hardening</td><td>Helmet, CORS, body-size limit, cookie parser</td></tr><tr><td>Main entities</td><td>User, Course, Transaction, Newsletter, two join entities</td></tr><tr><td>API style</td><td>Route-oriented JSON endpoints; Persian user-facing messages</td></tr><tr><td>Tests</td><td>No automated test suite is currently configured</td></tr></tbody></table>
+<h3 id="implemented-capabilities">Implemented capabilities</h3>
+<ul>
+<li>Register a user with a unique email and bcrypt-hashed password.</li>
+<li>Log in and receive a cookie-based JWT; log out by overwriting that cookie.</li>
+<li>Start password recovery, validate a four-digit OTP, and reset the password.</li>
+<li>Update the authenticated user's name and email, then refresh the JWT.</li>
+<li>List all courses or retrieve one course publicly.</li>
+<li>Let administrators create/delete courses and query a user's courses.</li>
+<li>List courses owned by the authenticated user.</li>
+<li>Register unique newsletter email addresses.</li>
+<li>Build a course basket from server-side prices, create an unpaid Zarinpal transaction, verify payment, and grant course ownership idempotently.</li>
+</ul>
+<h2 id="quick-start">Quick start</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>Node.js 20 or newer is recommended. The repository was successfully built during this review with Node <code>22.17.1</code> and npm <code>11.16.0</code>.</li>
+<li>PostgreSQL reachable through a Prisma connection URL.</li>
+<li>Zarinpal merchant credentials. They are required at application startup, even if payment endpoints are not called.</li>
+</ul>
+<h3 id="1-install-dependencies">1. Install dependencies</h3>
+<pre><code>npm install</code></pre>
+<p>The <code>postinstall</code> script runs <code>prisma generate</code> automatically.</p>
+<h3 id="2-configure-the-environment">2. Configure the environment</h3>
+<p>Create <code>.env</code> in the repository root. Never commit real secrets.</p>
+<pre><code>DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?schema=public"
+JWT_SECRET="replace-with-a-long-random-secret"
+PORT=3000
+ROUNDS=10
+ZARINPAL_MERCHANT_ID="your-merchant-id"
+ZARINPAL_ACCESS_TOKEN="your-access-token"
+FRONTEND_URL="http://localhost:5173"
+BACKEND_URL="http://localhost:3000"</code></pre>
+<p><code>ENV_MODE</code> is set by the npm scripts, so it normally does not need to be stored in <code>.env</code>.</p>
+<h3 id="3-create-or-update-the-database">3. Create or update the database</h3>
+<p>For development, apply migrations and regenerate the client:</p>
+<pre><code>npx prisma migrate dev
+npx prisma generate</code></pre>
+<p>For a deployed database, apply committed migrations without creating a new one:</p>
+<pre><code>npx prisma migrate deploy</code></pre>
+<h3 id="4-run-in-development">4. Run in development</h3>
+<pre><code>npm run dev</code></pre>
+<p>Nodemon runs <code>app.ts</code> with <code>ENV_MODE=development</code>. The default API address is <code>http://localhost:3000</code>.</p>
+<h3 id="5-build-and-run-production-output">5. Build and run production output</h3>
+<pre><code>npm run build
+npm start</code></pre>
+<p>The build emits JavaScript and source maps to <code>dist/</code>; <code>npm start</code> executes <code>dist/app.js</code> with <code>ENV_MODE=production</code>.</p>
+<h3 id="6-create-the-first-administrator">6. Create the first administrator</h3>
+<p>There is no admin-creation endpoint. Register a normal user, then promote it directly in the database using a controlled administrative process:</p>
+<pre><code>UPDATE "User" SET "isAdmin" = true WHERE email = 'admin@example.com';</code></pre>
+<h2 id="configuration">Configuration</h2>
+<table><thead><tr><th>Variable</th><th>Required</th><th>Purpose</th><th>Default/current behavior</th></tr></thead><tbody><tr><td><code>DATABASE_URL</code></td><td>Yes</td><td>PostgreSQL connection used by Prisma</td><td>No application default</td></tr><tr><td><code>JWT_SECRET</code></td><td>Yes</td><td>Signs and verifies authentication JWTs</td><td>No safe default</td></tr><tr><td><code>ZARINPAL_MERCHANT_ID</code></td><td>Yes</td><td>Identifies the Zarinpal merchant</td><td>Startup throws if absent</td></tr><tr><td><code>ZARINPAL_ACCESS_TOKEN</code></td><td>Yes</td><td>Authenticates Zarinpal SDK requests</td><td>Startup throws if absent</td></tr><tr><td><code>PORT</code></td><td>No</td><td>Express listening port</td><td><code>3000</code></td></tr><tr><td><code>ROUNDS</code></td><td>No</td><td>bcrypt work factor for registration/reset</td><td><code>10</code></td></tr><tr><td><code>FRONTEND_URL</code></td><td>No</td><td>Base URL used to create <code>/payment/verify</code> callback</td><td><code>http://localhost:3000</code></td></tr><tr><td><code>BACKEND_URL</code></td><td>No</td><td>Present in the local environment convention</td><td>Not referenced by current code</td></tr><tr><td><code>ENV_MODE</code></td><td>Via scripts</td><td><code>development</code> selects sandbox and relaxed cookie/CORS behavior</td><td><code>dev</code>/<code>start</code> scripts set it</td></tr></tbody></table>
+<p>Production mode has application-specific consequences:</p>
+<ul>
+<li>CORS accepts only <code>https://worldkarate.ir</code> and <code>https://www.worldkarate.ir</code>, with credentials enabled.</li>
+<li>The auth cookie becomes <code>Secure</code>, remains <code>SameSite=Lax</code>, and receives domain <code>worldkarate.ir</code>.</li>
+<li>Zarinpal uses production mode and payment URLs under <code>https://www.zarinpal.com/pg/StartPay</code>.</li>
+</ul>
+<p>Development mode accepts reflected origins (<code>origin: true</code>), uses a non-secure host cookie, and selects Zarinpal sandbox URLs.</p>
+<h2 id="architecture">Architecture</h2>
+<p><img src="../../docs/diagrams/system-architecture.svg" alt="World Karate runtime architecture"></p>
+<p>The application is a single-process modular monolith. <code>app.ts</code> configures cross-cutting middleware and mounts small Express routers. Feature routers call a shared Prisma client directly; there is no separate service or repository layer. This keeps the code compact, but transaction boundaries and reusable business rules must currently be handled in each route.</p>
+<h3 id="source-layout">Source layout</h3>
+<pre><code>app.ts                         Application composition and route mounting
+middleware/
+  authorization.ts            JWT cookie verification and user hydration
+  adminAuth.ts                 Database-backed administrator guard
+prisma/
+  schema.prisma                Canonical data model
+  migrations/                  PostgreSQL migration history
+  db.ts                        Shared PrismaClient instance
+schemas/                       Zod request validation
+src/
+  auth/                        Registration, login, recovery, profile, logout
+  courses/                     Public, user, and administrator course routes
+  newsletter/                  Subscriber registration
+  payment/                     Zarinpal checkout and verification
+utils/                         JWT, cookies, environment, OTP and SDK helpers
+dist/                          Compiled production JavaScript</code></pre>
+<h3 id="request-pipeline">Request pipeline</h3>
+<p>Every request passes through CORS, JSON/urlencoded parsing, Helmet, and cookie parsing. Protected endpoints then run <code>authorization</code>:</p>
+<ol>
+<li>Read <code>auth-token</code> from cookies.</li>
+<li>Verify its signature with <code>JWT_SECRET</code>.</li>
+<li>Find the current user by the token's email.</li>
+<li>Attach the full database user to <code>req.body.user</code>.</li>
+<li>Continue to the route; administrator routes additionally query <code>isAdmin</code> from the database.</li>
+</ol>
+<p>Reloading the user makes database state authoritative. The client cannot grant itself admin rights merely by changing a request body or stale token.</p>
+<h3 id="external-boundaries">External boundaries</h3>
+<ul>
+<li><strong>PostgreSQL</strong> stores all durable application state.</li>
+<li><strong>Zarinpal</strong> creates payment authorities and verifies completed payments.</li>
+<li><strong>The web frontend</strong> owns navigation to the hosted gateway and submits the authority to the verification endpoint after returning to its <code>/payment/verify</code> page.</li>
+<li><strong>Email delivery is not currently integrated.</strong> Although Nodemailer is installed, no mailer is called.</li>
+</ul>
+<h2 id="data-model">Data model</h2>
+<p><img src="../../docs/diagrams/entity-relationship.svg" alt="World Karate entity relationship diagram"></p>
+<h3 id="entity-responsibilities">Entity responsibilities</h3>
+<table><thead><tr><th>Entity</th><th>Responsibility and important constraints</th></tr></thead><tbody><tr><td><code>User</code></td><td>Identity, password hash, admin flag, recovery OTP, verification metadata. Email and verification key are unique.</td></tr><tr><td><code>Course</code></td><td>Public catalog record. Price is stored as an integer in Iranian rials. <code>link</code> is nullable in the database; <code>previewLinks</code> is a PostgreSQL text array.</td></tr><tr><td><code>Transaction</code></td><td>One checkout attempt. Belongs to one user, stores total, payment authority/reference identifiers, and paid state.</td></tr><tr><td><code>UsersOnCourses</code></td><td>Composite-key ownership relation. A user can own a course once. Created only after successful verification.</td></tr><tr><td><code>TransactionsOnCourses</code></td><td>Composite-key snapshot of which courses were included in a checkout attempt.</td></tr><tr><td><code>Newsletter</code></td><td>Independent unique email subscriber. It does not reference <code>User</code>.</td></tr></tbody></table>
+<h3 id="relationship-semantics">Relationship semantics</h3>
+<ul>
+<li>A user has zero or many transactions.</li>
+<li>Users and courses are many-to-many through <code>UsersOnCourses</code>.</li>
+<li>Transactions and courses are many-to-many through <code>TransactionsOnCourses</code>.</li>
+<li>Foreign keys use Prisma/PostgreSQL's restrictive deletion behavior. Deleting a course referenced by ownership or transaction rows can therefore fail until dependent records are handled.</li>
+<li>The transaction's join rows preserve basket membership. Its <code>totalPrice</code> preserves the charged total even if course prices later change.</li>
+</ul>
+<h3 id="identifier-nuance">Identifier nuance</h3>
+<p>At checkout, both <code>authority</code> and <code>transactionId</code> initially contain the Zarinpal authority. After successful verification, <code>transactionId</code> is replaced with Zarinpal's <code>ref_id</code>; <code>authority</code> remains the stable lookup key. API responses also use <code>transactionId</code> for the database row ID during checkout, so consumers should distinguish:</p>
+<ul>
+<li>checkout response <code>transactionId</code>: internal numeric transaction primary key;</li>
+<li>stored <code>Transaction.transactionId</code>: external authority before payment, external <code>ref_id</code> after payment.</li>
+</ul>
+<h2 id="authentication-and-authorization">Authentication and authorization</h2>
+<h3 id="cookie-and-token">Cookie and token</h3>
+<p>The cookie is named <code>auth-token</code>, is HTTP-only, applies to <code>/</code>, and lasts 10 days. JavaScript in the browser cannot read it. Frontend requests must include credentials—for example, <code>fetch(..., { credentials: "include" })</code>.</p>
+<p>The JWT contains <code>email</code>, <code>firstName</code>, <code>lastName</code>, and <code>isAdmin</code>. It has no explicit expiry; practical browser persistence is currently controlled by cookie lifetime. Profile updates create a new JWT so its identity claims remain current.</p>
+<h3 id="registration-and-login">Registration and login</h3>
+<p>Registration validates the name, email, and password; checks email uniqueness; normalizes each name to lower case with its first character capitalized; hashes the password; and creates a random 83-character verification key. Registration does <strong>not</strong> log the user in.</p>
+<p>Login intentionally returns the same generic message for an unknown email and a bad password. On success it sets the cookie and returns public profile fields.</p>
+<h3 id="password-recovery">Password recovery</h3>
+<p>The current recovery protocol is:</p>
+<ol>
+<li><code>PUT /forget-password</code> validates the email, creates a four-digit OTP, stores it on the user, and returns it in JSON.</li>
+<li><code>POST /validate-otp</code> compares the submitted numeric OTP with the stored value and, on success, sets the same authentication cookie used for normal login.</li>
+<li><code>PUT /reset-password</code> is protected by that cookie, validates matching passwords, hashes the new password, and updates the authenticated user.</li>
+</ol>
+<p>The OTP is not emailed, expired, single-use, rate-limited, or cleared after use in the current implementation. Treat this flow as development-stage until the mitigations in <a href="#known-limitations-and-recommended-next-steps">Known limitations</a> are applied.</p>
+<h3 id="authorization-matrix">Authorization matrix</h3>
+<table><thead><tr><th>Capability</th><th>Public</th><th>Authenticated user</th><th>Administrator</th></tr></thead><tbody><tr><td>Register/login/recovery/newsletter</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>List/view courses</td><td>✓</td><td>✓</td><td>✓</td></tr><tr><td>Checkout and verify payment</td><td>verify is public; checkout requires auth</td><td>✓</td><td>✓</td></tr><tr><td>Update own profile/logout/list owned courses</td><td></td><td>✓</td><td>✓</td></tr><tr><td>Create/delete courses</td><td></td><td></td><td>✓</td></tr><tr><td>Query courses by user email</td><td></td><td></td><td>✓</td></tr></tbody></table>
+<h2 id="functional-behavior">Functional behavior</h2>
+<h3 id="course-catalog-and-access">Course catalog and access</h3>
+<p>Public callers can list and inspect courses. A course contains marketing data, a price in rials, an image value, an optional full course link in the database, and preview link values. The authenticated ownership endpoint returns full course records whose <code>UsersOnCourses</code> relation contains the current user.</p>
+<p>The create endpoint validates title, description, numeric nonnegative price, image, and link. Although <code>Course.link</code> is nullable in Prisma, the API schema currently requires it. The create route does not accept <code>previewLinks</code>.</p>
+<h3 id="administration">Administration</h3>
+<p>Admin checks do not trust the JWT's <code>isAdmin</code> claim; they read the current database row. Admin endpoints create courses, delete a course by numeric ID, and attempt to list courses owned by a specified email.</p>
+<h3 id="newsletter">Newsletter</h3>
+<p>Newsletter signup validates an email, rejects duplicates, and creates a standalone subscriber row. There are no list, unsubscribe, or campaign endpoints.</p>
+<h3 id="payment-and-course-granting">Payment and course granting</h3>
+<p>Checkout accepts course IDs, loads matching courses from the database, rejects an empty/invalid basket and already-owned items, then calculates the total from stored prices. The client cannot submit a price. A successful Zarinpal request creates an unpaid transaction and its course rows before returning a hosted payment URL.</p>
+<p>Verification finds the transaction by authority and uses its stored total for server-to-server verification. Code <code>100</code> marks it paid, stores the reference ID, and inserts course ownership rows with duplicate skipping. An already-paid transaction returns success without repeating the grant operation.</p>
+<h2 id="api-reference">API reference</h2>
+<p>All bodies and responses are JSON. Successful and error messages are predominantly Persian. Unless noted, unexpected failures return <code>500</code>.</p>
+<h3 id="endpoint-index">Endpoint index</h3>
+<table><thead><tr><th>Method</th><th>Path</th><th>Access</th><th>Purpose</th></tr></thead><tbody><tr><td><code>POST</code></td><td><code>/register</code></td><td>Public</td><td>Create an account</td></tr><tr><td><code>POST</code></td><td><code>/login</code></td><td>Public</td><td>Authenticate and set cookie</td></tr><tr><td><code>POST</code></td><td><code>/logout</code></td><td>User</td><td>Clear auth cookie</td></tr><tr><td><code>PUT</code></td><td><code>/profile</code></td><td>User</td><td>Update own profile</td></tr><tr><td><code>PUT</code></td><td><code>/forget-password</code></td><td>Public</td><td>Generate recovery OTP</td></tr><tr><td><code>POST</code></td><td><code>/validate-otp</code></td><td>Public</td><td>Validate OTP and set cookie</td></tr><tr><td><code>PUT</code></td><td><code>/reset-password</code></td><td>User</td><td>Set new password</td></tr><tr><td><code>GET</code></td><td><code>/fetch-course</code></td><td>Public</td><td>List courses</td></tr><tr><td><code>GET</code></td><td><code>/fetch-course/:courseId</code></td><td>Public</td><td>Get one course</td></tr><tr><td><code>POST</code></td><td><code>/create-course</code></td><td>Admin</td><td>Create course</td></tr><tr><td><code>DELETE</code></td><td><code>/delete-course/:courseId</code></td><td>Admin</td><td>Delete course</td></tr><tr><td><code>GET</code></td><td><code>/admin/fetch-course/:email</code></td><td>Admin</td><td>Query a user's courses</td></tr><tr><td><code>GET</code></td><td><code>/user/fetch-course</code></td><td>User</td><td>List current user's courses</td></tr><tr><td><code>POST</code></td><td><code>/register-newsletter</code></td><td>Public</td><td>Subscribe an email</td></tr><tr><td><code>POST</code></td><td><code>/payment/checkout</code></td><td>User</td><td>Create checkout transaction</td></tr><tr><td><code>POST</code></td><td><code>/payment/verify</code></td><td>Public</td><td>Verify by authority and grant courses</td></tr></tbody></table>
+<h3 id="identity-endpoints">Identity endpoints</h3>
+<h4 id="post-register"><code>POST /register</code></h4>
+<pre><code>{
+  "firstName": "Sara",
+  "lastName": "Ahmadi",
+  "email": "sara@example.com",
+  "password": "karate123"
+}</code></pre>
+<ul>
+<li>Names: 3–20 letters/spaces.</li>
+<li>Password: at least 8 characters with at least one lowercase Latin letter and one digit.</li>
+<li>Returns <code>200</code> with <code>verificationKey</code>; duplicate email returns <code>409</code>; invalid data returns <code>400</code>.</li>
+</ul>
+<h4 id="post-login"><code>POST /login</code></h4>
+<pre><code>{ "email": "sara@example.com", "password": "karate123" }</code></pre>
+<p>Returns <code>200</code>, sets <code>auth-token</code>, and includes <code>user.firstName</code>, <code>user.lastName</code>, and <code>user.email</code>. Invalid input returns <code>400</code>; invalid credentials return <code>403</code>.</p>
+<h4 id="post-logout"><code>POST /logout</code></h4>
+<p>Requires the auth cookie. Overwrites it with an empty value using the standard cookie options and returns <code>200</code>.</p>
+<h4 id="put-profile"><code>PUT /profile</code></h4>
+<p>Any of the fields may be supplied; <code>email</code> is optional despite its schema's wording.</p>
+<pre><code>{ "firstName": "سارا", "lastName": "احمدی", "email": "new@example.com" }</code></pre>
+<p>Names allow Persian or Latin letters without spaces and are 3–20 characters. Returns <code>200</code> and refreshes the JWT. A conflicting email currently falls through to <code>500</code>.</p>
+<h4 id="put-forget-password"><code>PUT /forget-password</code></h4>
+<pre><code>{ "email": "sara@example.com" }</code></pre>
+<p>Returns <code>200</code> with <code>{ message, OTP }</code>. Invalid and unknown emails intentionally receive the same Persian message, with status <code>400</code> and <code>404</code> respectively.</p>
+<h4 id="post-validate-otp"><code>POST /validate-otp</code></h4>
+<pre><code>{ "email": "sara@example.com", "OTP": 4831 }</code></pre>
+<p><code>OTP</code> must be a JSON number from 1000 through 9999. Success sets <code>auth-token</code>; invalid input or mismatch returns <code>400</code>.</p>
+<h4 id="put-reset-password"><code>PUT /reset-password</code></h4>
+<pre><code>{ "newPassword": "newpass123", "repeatPassword": "newpass123" }</code></pre>
+<p>Requires the auth cookie. Both values must satisfy the password policy and match. Returns <code>200</code>.</p>
+<h3 id="course-endpoints">Course endpoints</h3>
+<h4 id="get-fetch-course"><code>GET /fetch-course</code></h4>
+<p>Returns <code>200</code> with an array of all course rows. There is no pagination, sorting, filtering, or projection.</p>
+<h4 id="get-fetch-course-courseid"><code>GET /fetch-course/:courseId</code></h4>
+<p>Returns one course or <code>404</code>. A malformed numeric ID reaches the Prisma call and is handled as <code>400</code>.</p>
+<h4 id="post-create-course"><code>POST /create-course</code></h4>
+<pre><code>{
+  "title": "Advanced Kumite",
+  "description": "A complete advanced kumite training program.",
+  "price": 2500000,
+  "img": "https://cdn.example.com/kumite.jpg",
+  "link": "https://courses.example.com/kumite"
+}</code></pre>
+<p>Requires user and admin guards. Title is 5–50 characters; description is 20–1000; price is a nonnegative JSON number. <code>img</code> and <code>link</code> are required strings but are not URL-validated. Returns <code>200</code> with the created course.</p>
+<h4 id="delete-delete-course-courseid"><code>DELETE /delete-course/:courseId</code></h4>
+<p>Requires admin access. Returns <code>200</code>; unknown/malformed IDs and foreign-key restrictions are currently returned as <code>500</code>.</p>
+<h4 id="get-user-fetch-course"><code>GET /user/fetch-course</code></h4>
+<p>Returns all course records owned by the authenticated user.</p>
+<h4 id="get-admin-fetch-course-email"><code>GET /admin/fetch-course/:email</code></h4>
+<p>Requires admin access. Returns <code>400</code> for an unknown user. <strong>Current defect:</strong> the implementation maps <code>userId</code> instead of <code>courseId</code> from the join rows, so the returned courses can be incorrect.</p>
+<h3 id="newsletter-endpoint">Newsletter endpoint</h3>
+<h4 id="post-register-newsletter"><code>POST /register-newsletter</code></h4>
+<pre><code>{ "email": "reader@example.com" }</code></pre>
+<p>Returns <code>200</code>; invalid or already-registered emails return <code>400</code>.</p>
+<h3 id="payment-endpoints">Payment endpoints</h3>
+<h4 id="post-payment-checkout"><code>POST /payment/checkout</code></h4>
+<pre><code>{ "courseIds": ["1", "2"] }</code></pre>
+<p>The route expects an array and converts each value with <code>Number</code>. It has no Zod schema, so omit/null/wrong-type values may become server errors. Valid course matches—not requested count—define the basket; nonexistent IDs are silently excluded if at least one valid course remains. Duplicate requested IDs are collapsed by the database query.</p>
+<p>Success response:</p>
+<pre><code>{
+  "message": "در حال انتقال به درگاه پرداخت...",
+  "paymentUrl": "https://sandbox.zarinpal.com/pg/StartPay/A000...",
+  "authority": "A000...",
+  "transactionId": 42
+}</code></pre>
+<p>Empty/wholly invalid/already-owned baskets or a rejected gateway request return <code>400</code>.</p>
+<h4 id="post-payment-verify"><code>POST /payment/verify</code></h4>
+<pre><code>{ "authority": "A000..." }</code></pre>
+<p>Returns <code>404</code> when no transaction matches. On gateway code <code>100</code>, returns <code>200</code>, marks the transaction paid, and grants courses. Already-paid transactions also return <code>200</code>. Other gateway results return <code>400</code>. The route is public because it acts as a payment completion endpoint; possession of a valid authority identifies the transaction.</p>
+<h2 id="payment-lifecycle">Payment lifecycle</h2>
+<p><img src="../../docs/diagrams/payment-sequence.svg" alt="World Karate payment sequence"></p>
+<p>There are two durable relations for a reason:</p>
+<ul>
+<li><code>TransactionsOnCourses</code> answers “what was this checkout attempting to buy?”</li>
+<li><code>UsersOnCourses</code> answers “what may this user access now?”</li>
+</ul>
+<p>Only successful verification copies the transaction's course IDs into ownership. This separation prevents an unpaid checkout from granting access. The already-paid branch and the ownership composite key make repeated verification largely idempotent.</p>
+<p>The transaction update and ownership grant are currently separate database operations, not a single Prisma transaction. A process/database failure between them can produce a paid transaction without all course grants; operations should have a reconciliation path until they are made atomic.</p>
+<h2 id="validation-and-error-behavior">Validation and error behavior</h2>
+<p>Zod validates registration, login, password recovery/reset, profile updates, and course creation. Payment inputs and numeric URL parameters are validated manually or implicitly.</p>
+<p>Common status conventions:</p>
+<table><thead><tr><th>Status</th><th>Meaning in this API</th></tr></thead><tbody><tr><td><code>200</code></td><td>Successful create/update/read; the API does not currently use <code>201</code></td></tr><tr><td><code>400</code></td><td>Validation, invalid basket/payment, OTP mismatch, or malformed course lookup</td></tr><tr><td><code>403</code></td><td>Bad login or access denied (subject to middleware chaining issue below)</td></tr><tr><td><code>404</code></td><td>Unknown course, recovery email, or transaction</td></tr><tr><td><code>409</code></td><td>Registration email already exists</td></tr><tr><td><code>500</code></td><td>Unhandled Prisma, gateway, or server failure</td></tr></tbody></table>
+<p>Prisma error objects are sometimes included directly in JSON. Production APIs should normalize errors and avoid exposing internal details.</p>
+<h2 id="security-model">Security model</h2>
+<h3 id="existing-controls">Existing controls</h3>
+<ul>
+<li>bcrypt password hashing; hashes are never returned by normal route responses.</li>
+<li>HTTP-only authentication cookie and production-only <code>Secure</code> flag.</li>
+<li>JWT signature verification plus a fresh database user lookup on protected requests.</li>
+<li>Database-backed administrator check.</li>
+<li>Helmet security headers.</li>
+<li>Credentialed production CORS allowlist.</li>
+<li>Server-side payment total calculation and server-to-server payment verification.</li>
+<li>Unique/composite database keys prevent duplicate accounts, newsletter entries, authorities, and course ownership.</li>
+<li>Generic login failures reduce account enumeration through that endpoint.</li>
+</ul>
+<h3 id="operational-security-requirements">Operational security requirements</h3>
+<ul>
+<li>Generate a high-entropy <code>JWT_SECRET</code>; rotate it through a planned forced-login process.</li>
+<li>Store <code>.env</code> outside version control and use the deployment platform's secret manager.</li>
+<li>Serve production only over HTTPS; the cookie will not work over plain HTTP in production mode.</li>
+<li>Restrict database network access, use TLS where appropriate, and back up PostgreSQL.</li>
+<li>Protect Zarinpal credentials and separate sandbox from production credentials.</li>
+<li>Add request-rate limits to login, registration, OTP generation/validation, newsletter, and payment endpoints.</li>
+<li>Do not log full gateway payloads or sensitive error objects in production.</li>
+</ul>
+<h2 id="build-deployment-and-operations">Build, deployment, and operations</h2>
+<h3 id="npm-commands">npm commands</h3>
+<table><thead><tr><th>Command</th><th>Result</th></tr></thead><tbody><tr><td><code>npm run dev</code></td><td>Starts Nodemon against TypeScript with development mode</td></tr><tr><td><code>npm run build</code></td><td>Runs <code>tsc</code> and writes to <code>dist/</code></td></tr><tr><td><code>npm start</code></td><td>Runs compiled app in production mode</td></tr><tr><td><code>npm test</code></td><td>Placeholder that exits with failure; no tests exist</td></tr><tr><td><code>npx prisma generate</code></td><td>Regenerates Prisma client after schema/dependency changes</td></tr><tr><td><code>npx prisma migrate dev</code></td><td>Develops/applies migrations locally</td></tr><tr><td><code>npx prisma migrate deploy</code></td><td>Applies committed migrations in deployment</td></tr><tr><td><code>npx prisma studio</code></td><td>Opens a local database browser; never expose publicly</td></tr></tbody></table>
+<p>The project compiled successfully with <code>npm run build</code> during documentation generation.</p>
+<h3 id="production-checklist">Production checklist</h3>
+<ol>
+<li>Provision PostgreSQL and set a least-privileged application user.</li>
+<li>Supply all required secrets and set the correct <code>FRONTEND_URL</code>.</li>
+<li>Run <code>npm ci</code>, which also generates Prisma Client.</li>
+<li>Run <code>npx prisma migrate deploy</code> as a controlled release step.</li>
+<li>Run <code>npm run build</code> and start <code>node dist/app.js</code> (or <code>npm start</code>).</li>
+<li>Place the process behind an HTTPS reverse proxy/load balancer.</li>
+<li>Confirm the frontend origin is one of the hard-coded production CORS origins and that cookie domain routing is valid.</li>
+<li>Add process supervision, structured logs, health/readiness endpoints, metrics, alerts, and database backups.</li>
+<li>Perform a Zarinpal production checkout with a low-value test course and verify ownership creation.</li>
+</ol>
+<h3 id="scaling-characteristics">Scaling characteristics</h3>
+<p>The API is stateless apart from PostgreSQL and the external gateway, so multiple process replicas can share the same database. Cookie JWTs do not require sticky sessions. Before scaling writes, make payment finalization atomic and consider connection limits or a database pooler; every Node process owns a Prisma connection pool.</p>
+<h2 id="testing-and-troubleshooting">Testing and troubleshooting</h2>
+<h3 id="suggested-smoke-test">Suggested smoke test</h3>
+<ol>
+<li>Register, log in, and confirm the <code>auth-token</code> cookie is stored.</li>
+<li>Promote the test user to admin and create a course.</li>
+<li>Fetch the public course list and single course.</li>
+<li>Start checkout in sandbox, complete the gateway flow, and submit the authority to verification.</li>
+<li>Confirm <code>Transaction.isPaid=true</code> and that <code>GET /user/fetch-course</code> contains the course.</li>
+<li>Call verification again and confirm it returns the already-paid success response without duplicate ownership.</li>
+</ol>
+<h3 id="common-failures">Common failures</h3>
+<table><thead><tr><th>Symptom</th><th>Likely cause / action</th></tr></thead><tbody><tr><td>App throws before listening</td><td>Missing Zarinpal merchant ID/access token; they are checked at module import</td></tr><tr><td>Prisma cannot connect</td><td>Check <code>DATABASE_URL</code>, database reachability, credentials, and applied migrations</td></tr><tr><td>Browser is not authenticated</td><td>Use <code>credentials: "include"</code>; verify HTTPS, CORS origin, cookie domain, and <code>ENV_MODE</code></td></tr><tr><td>Development callback points to wrong app</td><td>Set <code>FRONTEND_URL</code>; its fallback is <code>http://localhost:3000</code></td></tr><tr><td>Payment opens production/sandbox unexpectedly</td><td>Check <code>ENV_MODE</code>; exact value <code>development</code> enables sandbox</td></tr><tr><td>Course deletion returns <code>500</code></td><td>The course may be referenced by ownership/transaction join rows</td></tr><tr><td>Admin user-course response looks wrong</td><td>Known <code>userId</code>/<code>courseId</code> mapping defect</td></tr><tr><td>Prisma types differ from schema</td><td>Run <code>npx prisma generate</code>, then rebuild</td></tr></tbody></table>
+<h2 id="known-limitations-and-recommended-next-steps">Known limitations and recommended next steps</h2>
+<p>These are prioritized by risk and impact, not cosmetic preference.</p>
+<h3 id="critical-security-and-correctness">Critical security and correctness</h3>
+<ol>
+<li><strong>Complete password recovery.</strong> Send the OTP through an actual mail provider; never return it in JSON. Store a hash, expiry, attempt count, and purpose; clear/rotate it after use. A recovery token should authorize password reset only, not become a general login cookie.</li>
+<li><strong>Add JWT expiry and token lifecycle controls.</strong> Supply <code>expiresIn</code>, define rotation/revocation behavior, and invalidate existing sessions after password changes where required.</li>
+<li><strong>Fix middleware response order.</strong> <code>res.json(...).status(403)</code> sends the default status before setting <code>403</code>; use <code>res.status(403).json(...)</code>. The missing-user branch has the same problem. Type <code>findUnique</code> results safely before destructuring.</li>
+<li><strong>Make payment finalization atomic.</strong> Wrap transaction state update and ownership grants in <code>prisma.$transaction</code>; define behavior for gateway success followed by a local failure.</li>
+<li><strong>Validate payment input strictly.</strong> Add Zod for a nonempty, unique array of positive integer IDs and reject the entire basket if any requested ID is missing.</li>
+<li><strong>Fix admin user-course lookup.</strong> Map <code>courseId</code>, not <code>userId</code>, or query Course with a relational filter as the user endpoint does.</li>
+</ol>
+<h3 id="api-and-operational-maturity">API and operational maturity</h3>
+<ol>
+<li>Decide whether account verification is a feature; implement and enforce <code>verified</code>/<code>verificationKey</code>, or remove them.</li>
+<li>Add CSRF protection or a deliberate same-site strategy for state-changing cookie-authenticated requests. <code>SameSite=Lax</code> helps but is not a complete policy for every deployment topology.</li>
+<li>Add rate limiting, consistent error envelopes, request IDs, structured logs, and health/readiness endpoints.</li>
+<li>Do not serialize raw exception/Prisma objects to clients. Map uniqueness, not-found, and foreign-key errors to safe <code>4xx</code> responses.</li>
+<li>Validate <code>img</code>/<code>link</code> as URLs; support <code>previewLinks</code> if it is part of the product; reconcile the API-required link with the nullable database field.</li>
+<li>Add pagination and response projections. Public course responses currently include all stored fields, including full course links.</li>
+<li>Add an authenticated payment history/transaction status endpoint and an administrative reconciliation workflow.</li>
+<li>Add newsletter unsubscribe/consent metadata if messages will be sent.</li>
+<li>Add automated unit, integration, authorization, and payment idempotency tests; wire <code>npm test</code> to them and run them in CI.</li>
+</ol>
+<p>---</p>
+<p><strong>Canonical sources:</strong> behavior was derived from <code>app.ts</code>, <code>src/</code>, <code>middleware/</code>, <code>schemas/</code>, <code>utils/</code>, <code>prisma/schema.prisma</code>, migration SQL, <code>package.json</code>, and <code>tsconfig.json</code>. If this guide and the executable code diverge, treat the code and applied database migrations as runtime truth, then update this document in the same change.</p>
+</main></body></html>
