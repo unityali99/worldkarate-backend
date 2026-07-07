@@ -14,6 +14,6 @@ export const createJwt = (user: {
       lastName: user.lastName,
       isAdmin: user.isAdmin,
     },
-    process.env.JWT_SECRET
+    process.env.JWT_SECRET!,
   );
 };

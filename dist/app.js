@@ -24,14 +24,14 @@ const verify_1 = __importDefault(require("./src/payment/verify"));
 const authorization_1 = require("./middleware/authorization");
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const adminAuth_1 = require("./middleware/adminAuth");
+const cookieOptions_1 = require("./utils/cookieOptions");
 require("dotenv").config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
 const corsOptions = {
-    origin: true,
-    // origin: isProduction
-    //   ? ["https://worldkarate.ir", "https://www.worldkarate.ir"]
-    //   : true,
+    origin: cookieOptions_1.isProduction
+        ? ["https://worldkarate.ir", "https://www.worldkarate.ir"]
+        : true,
     credentials: true,
     optionsSuccessStatus: 200,
 };

@@ -43,17 +43,19 @@ router.post("/", async (req: Request, res: Response) => {
         .send();
 
     const jwtToken = createJwt(user);
+    const responseUser = {
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      ...(user.isAdmin && { isAdmin: true }),
+    };
 
     return res
       .cookie(tokenCookieName, jwtToken, cookieOptions)
       .status(200)
       .json({
         message: "ورود موفقیت آمیز بود",
-        user: {
-          firstName: user.firstName,
-          lastName: user.lastName,
-          email: user.email,
-        },
+        user: responseUser,
       })
       .send();
   } catch (error) {
