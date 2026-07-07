@@ -16,7 +16,6 @@ const express_1 = require("express");
 const db_1 = __importDefault(require("../../prisma/db"));
 const zarinpal_1 = require("../../utils/zarinpal");
 const authorization_1 = require("../../middleware/authorization");
-const cookieOptions_1 = require("../../utils/cookieOptions");
 const router = (0, express_1.Router)();
 router.post("/", authorization_1.authorization, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
@@ -70,11 +69,7 @@ router.post("/", authorization_1.authorization, (req, res) => __awaiter(void 0, 
                 },
             });
             // Payment request successful, return payment URL
-            // Use sandbox URL for development, production URL for production
-            const baseUrl = cookieOptions_1.isProduction
-                ? "https://www.zarinpal.com/pg/StartPay"
-                : "https://sandbox.zarinpal.com/pg/StartPay";
-            const paymentUrl = `${baseUrl}/${authority}`;
+            const paymentUrl = zarinpal_1.zarinpal.payments.getRedirectUrl(authority);
             console.log("Payment URL:", paymentUrl);
             // Return payment URL in response
             return res.status(200).json({
@@ -106,7 +101,8 @@ router.post("/", authorization_1.authorization, (req, res) => __awaiter(void 0, 
             .status(500)
             .json({
             message: "خطا در پردازش درخواست پرداخت",
-            error: gatewayError || (error instanceof Error ? error.message : "خطای نامشخص"),
+            error: gatewayError ||
+                (error instanceof Error ? error.message : "خطای نامشخص"),
         })
             .send();
     }

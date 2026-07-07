@@ -3,7 +3,6 @@ import { User } from "@prisma/client";
 import prisma from "../../prisma/db";
 import { zarinpal } from "../../utils/zarinpal";
 import { authorization } from "../../middleware/authorization";
-import { isProduction } from "../../utils/cookieOptions";
 
 const router = Router();
 
@@ -29,7 +28,7 @@ router.post("/", authorization, async (req: Request, res: Response) => {
 
     const totalPrice = courses.reduce(
       (accumulator, currentVal) => accumulator + currentVal.price,
-      0
+      0,
     );
     const validCourseIds = courses.map((c) => ({ courseId: c.id }));
 
@@ -58,7 +57,7 @@ router.post("/", authorization, async (req: Request, res: Response) => {
 
     console.log(
       "Payment request response:",
-      JSON.stringify(paymentRequest, null, 2)
+      JSON.stringify(paymentRequest, null, 2),
     );
 
     if (paymentRequest.data.code === 100) {
@@ -78,11 +77,7 @@ router.post("/", authorization, async (req: Request, res: Response) => {
       });
 
       // Payment request successful, return payment URL
-      // Use sandbox URL for development, production URL for production
-      const baseUrl = isProduction
-        ? "https://www.zarinpal.com/pg/StartPay"
-        : "https://sandbox.zarinpal.com/pg/StartPay";
-      const paymentUrl = `${baseUrl}/${authority}`;
+      const paymentUrl = zarinpal.payments.getRedirectUrl(authority);
       console.log("Payment URL:", paymentUrl);
 
       // Return payment URL in response
@@ -115,7 +110,9 @@ router.post("/", authorization, async (req: Request, res: Response) => {
       .status(500)
       .json({
         message: "خطا در پردازش درخواست پرداخت",
-        error: gatewayError || (error instanceof Error ? error.message : "خطای نامشخص"),
+        error:
+          gatewayError ||
+          (error instanceof Error ? error.message : "خطای نامشخص"),
       })
       .send();
   }
