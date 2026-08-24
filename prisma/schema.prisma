@@ -4,23 +4,30 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  INSTRUCTOR
+  ADMIN
 }
 
 model User {
-  id              Int              @id @unique @default(autoincrement())
-  firstName       String
-  lastName        String
-  email           String           @unique
-  password        String
-  verified        Boolean          @default(false)
-  verificationKey String           @unique
-  OTP             Int?
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  courses         UsersOnCourses[]
-  transactions    Transaction[]
-  isAdmin         Boolean          @default(false)
+  id                Int              @id @unique @default(autoincrement())
+  firstName         String
+  lastName          String
+  email             String           @unique
+  password          String
+  role              Role             @default(USER)
+  verified          Boolean          @default(false)
+  verificationKey   String           @unique
+  OTP               Int?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+  courses           UsersOnCourses[]
+  instructedCourses Course[]         @relation("InstructorCourses")
+  transactions      Transaction[]
+  isAdmin           Boolean          @default(false)
 }
 
 model Course {
@@ -31,6 +38,8 @@ model Course {
   img          String
   link         String?
   previewLinks String[]
+  instructorId Int?
+  instructor   User?                   @relation("InstructorCourses", fields: [instructorId], references: [id], onDelete: SetNull)
   users        UsersOnCourses[]
   transactions TransactionsOnCourses[]
 }

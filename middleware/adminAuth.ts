@@ -1,4 +1,4 @@
-import { User } from "@prisma/client";
+import { Role, User } from "@prisma/client";
 import { Request, Response, NextFunction } from "express";
 import prisma from "../prisma/db";
 
@@ -9,9 +9,9 @@ export async function adminAuth(
 ) {
   const { id }: User = req.body.user;
   try {
-    const { isAdmin } = await prisma.user.findUnique({ where: { id } });
+    const user = await prisma.user.findUnique({ where: { id } });
 
-    if (!isAdmin)
+    if (!user || (user.role !== Role.ADMIN && user.role !== Role.INSTRUCTOR))
       return res.status(403).json({ message: "Access Denied" }).send();
 
     next();

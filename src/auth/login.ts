@@ -1,4 +1,5 @@
 import { Request, Response, Router } from "express";
+import { Role } from "@prisma/client";
 import Login, { LoginType } from "../../schemas/auth/Login";
 import prisma from "../../prisma/db";
 import bcrypt from "bcrypt";
@@ -47,7 +48,7 @@ router.post("/", async (req: Request, res: Response) => {
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      ...(user.isAdmin && { isAdmin: true }),
+      role: user.role,
     };
 
     return res
