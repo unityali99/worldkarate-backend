@@ -5,7 +5,19 @@
     "target": "es6",
     "moduleResolution": "node",
     "sourceMap": true,
-    "outDir": "dist"
+    "outDir": "dist",
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
-  "lib": ["es2015"]
+  "include": [
+    "src/**/*",
+    "middleware/**/*",
+    "utils/**/*",
+    "schemas/**/*",
+    "app.ts",
+    "prisma/**/*",
+    "prisma.config.ts"
+  ],
+  "ts-node": {
+    "files": true
+  }
 }

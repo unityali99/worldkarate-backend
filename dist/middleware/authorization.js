@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.authorization = authorization;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const db_1 = __importDefault(require("../prisma/db"));
+const user_repository_1 = require("../src/repositories/user.repository");
 const createJwt_1 = require("../utils/createJwt");
 function authorization(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -23,11 +23,10 @@ function authorization(req, res, next) {
             token = req.cookies[`${createJwt_1.tokenCookieName}`];
         try {
             const decodedUser = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
-            const user = yield (db_1.default === null || db_1.default === void 0 ? void 0 : db_1.default.user.findUnique({
-                where: { email: decodedUser.email },
-            }));
+            const user = yield user_repository_1.UserRepository.findByEmail(decodedUser.email);
             if (!user)
-                return res.json({ message: "User not found" }).status(400).end();
+                return res.status(400).json({ message: "User not found" }).end();
+            req.user = user;
             req.body.user = user;
             next();
         }

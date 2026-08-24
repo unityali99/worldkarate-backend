@@ -11,10 +11,10 @@ const Course = zod_1.z.object({
         .min(20, "Description should not be less than 20 characters")
         .max(1000, "Description should not be more than 1000 characters"),
     price: zod_1.z
-        .number({ required_error: "Number is requried" })
+        .number({ required_error: "Price is required" })
         .nonnegative("Price can't be negative"),
     img: zod_1.z.string({ required_error: "Course image is required" }),
-    link: zod_1.z.string({ required_error: "Course link is requried" }),
+    link: zod_1.z.string({ required_error: "Course link is required" }),
 });
 exports.default = Course;
 //# sourceMappingURL=Course.js.map

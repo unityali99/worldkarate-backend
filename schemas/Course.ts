@@ -10,10 +10,10 @@ const Course = z.object({
     .min(20, "Description should not be less than 20 characters")
     .max(1000, "Description should not be more than 1000 characters"),
   price: z
-    .number({ required_error: "Number is requried" })
+    .number({ required_error: "Price is required" })
     .nonnegative("Price can't be negative"),
   img: z.string({ required_error: "Course image is required" }),
-  link: z.string({ required_error: "Course link is requried" }),
+  link: z.string({ required_error: "Course link is required" }),
 });
 
 export type CourseType = z.infer<typeof Course>;

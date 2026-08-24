@@ -8,18 +8,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.adminAuth = adminAuth;
-const db_1 = __importDefault(require("../prisma/db"));
+const client_1 = require("@prisma/client");
+const user_repository_1 = require("../src/repositories/user.repository");
 function adminAuth(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { id } = req.body.user;
+        const userPayload = req.user || req.body.user;
         try {
-            const { isAdmin } = yield db_1.default.user.findUnique({ where: { id } });
-            if (!isAdmin)
+            const user = yield user_repository_1.UserRepository.findById(userPayload.id);
+            if (!user || (user.role !== client_1.Role.ADMIN && user.role !== client_1.Role.INSTRUCTOR))
                 return res.status(403).json({ message: "Access Denied" }).send();
             next();
         }

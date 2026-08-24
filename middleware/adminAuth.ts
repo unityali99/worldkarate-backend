@@ -1,15 +1,15 @@
 import { Role, User } from "@prisma/client";
 import { Request, Response, NextFunction } from "express";
-import prisma from "../prisma/db";
+import { UserRepository } from "../src/repositories/user.repository";
 
 export async function adminAuth(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const { id }: User = req.body.user;
+  const userPayload: User = req.user || req.body.user;
   try {
-    const user = await prisma.user.findUnique({ where: { id } });
+    const user = await UserRepository.findById(userPayload.id);
 
     if (!user || (user.role !== Role.ADMIN && user.role !== Role.INSTRUCTOR))
       return res.status(403).json({ message: "Access Denied" }).send();

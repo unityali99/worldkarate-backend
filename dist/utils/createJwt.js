@@ -11,7 +11,7 @@ const createJwt = (user) => {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
-        isAdmin: user.isAdmin,
+        role: user.role,
     }, process.env.JWT_SECRET);
 };
 exports.createJwt = createJwt;

@@ -1,7 +1,6 @@
 import { CookieOptions } from "express";
-import { envMode } from "./envMode";
 
-export const isProduction = envMode === "production";
+export const isProduction = process.env.ENV_MODE === "production";
 
 export const cookieOptions: CookieOptions = {
   httpOnly: true,

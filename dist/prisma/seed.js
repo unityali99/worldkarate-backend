@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
+const client_1 = require("@prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const db_1 = __importDefault(require("./db"));
 const generateUniqueString_1 = require("../utils/generateUniqueString");
@@ -31,14 +32,14 @@ function main() {
             const updated = yield db_1.default.user.update({
                 where: { email },
                 data: {
-                    isAdmin: true,
+                    role: client_1.Role.ADMIN,
                     verified: true,
                     password: encryptedPassword,
                     firstName: (0, capitlizeFirstLetter_1.default)(firstName),
                     lastName: (0, capitlizeFirstLetter_1.default)(lastName),
                 },
             });
-            console.log(`✅ Admin user '${email}' updated successfully! (ID: ${updated.id})`);
+            console.log(`✅ Admin user '${email}' updated successfully! (ID: ${updated.id}, Role: ${updated.role})`);
         }
         else {
             const verificationKey = (0, generateUniqueString_1.generateUniqueString)(83);
@@ -48,12 +49,12 @@ function main() {
                     firstName: (0, capitlizeFirstLetter_1.default)(firstName),
                     lastName: (0, capitlizeFirstLetter_1.default)(lastName),
                     password: encryptedPassword,
-                    isAdmin: true,
+                    role: client_1.Role.ADMIN,
                     verified: true,
                     verificationKey,
                 },
             });
-            console.log(`✅ Admin user '${email}' created successfully! (ID: ${created.id})`);
+            console.log(`✅ Admin user '${email}' created successfully! (ID: ${created.id}, Role: ${created.role})`);
         }
     });
 }

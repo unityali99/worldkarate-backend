@@ -1,25 +1,12 @@
 import express from "express";
 import helmet from "helmet";
 import cors, { CorsOptions } from "cors";
-import register from "./src/auth/signup";
-import login from "./src/auth/login";
-import logout from "./src/auth/logout";
-import profile from "./src/auth/profile";
-import forgetPassword from "./src/auth/forgetPassword";
-import resetPassword from "./src/auth/resetPassword";
-import validateOtp from "./src/auth/validateOTP";
-import createCourse from "./src/courses/crud/createCourse";
-import fetchCourses from "./src/courses/crud/fetchCourses";
-import fetchUserCourses from "./src/courses/user/fetchUserCourses";
-import adminFetchCourses from "./src/courses/admin/adminFetchCourses";
-import deleteCourse from "./src/courses/crud/deleteCourse";
-import registerNewsletter from "./src/newsletter/registerNewsletter";
-import checkout from "./src/payment/checkout";
-import verify from "./src/payment/verify";
-import { authorization } from "./middleware/authorization";
 import cookies from "cookie-parser";
-import { adminAuth } from "./middleware/adminAuth";
 import { isProduction } from "./utils/cookieOptions";
+import authRoutes from "./src/routes/auth.routes";
+import courseRoutes from "./src/routes/course.routes";
+import paymentRoutes from "./src/routes/payment.routes";
+import newsletterRoutes from "./src/routes/newsletter.routes";
 
 require("dotenv").config();
 
@@ -41,28 +28,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(helmet());
 app.use(cookies());
 
-// Authorization
-app.use("/register", register);
-app.use("/login", login);
-app.use("/forget-password", forgetPassword);
-app.use("/validate-otp", validateOtp);
-app.use("/reset-password", authorization, resetPassword);
-app.use("/profile", authorization, profile);
-app.use("/logout", authorization, logout);
-
-// CRUD
-app.use("/fetch-course", fetchCourses);
-app.use("/create-course", authorization, adminAuth, createCourse);
-app.use("/delete-course", authorization, adminAuth, deleteCourse);
-app.use("/admin/fetch-course", authorization, adminAuth, adminFetchCourses);
-app.use("/user/fetch-course", authorization, fetchUserCourses);
-
-//payment
-app.use("/payment/checkout", checkout);
-app.use("/payment/verify", verify);
-
-// Others
-app.use("/register-newsletter", registerNewsletter);
+// Mount Layered Application Routes
+app.use(authRoutes);
+app.use(courseRoutes);
+app.use(paymentRoutes);
+app.use(newsletterRoutes);
 
 app.listen(port, () => {
   return console.log(`Listening at http://localhost:${port}`);
