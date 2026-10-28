@@ -12,7 +12,7 @@ export class NewsletterController {
     } catch (error) {
       return res
         .status(500)
-        .json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید", error })
+        .json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" })
         .send();
     }
   }

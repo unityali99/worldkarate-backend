@@ -12,6 +12,7 @@ const auth_routes_1 = __importDefault(require("./src/routes/auth.routes"));
 const course_routes_1 = __importDefault(require("./src/routes/course.routes"));
 const payment_routes_1 = __importDefault(require("./src/routes/payment.routes"));
 const newsletter_routes_1 = __importDefault(require("./src/routes/newsletter.routes"));
+const errorHandler_1 = require("./middleware/errorHandler");
 require("dotenv").config();
 const app = (0, express_1.default)();
 const port = process.env.PORT || 3000;
@@ -23,16 +24,19 @@ const corsOptions = {
     optionsSuccessStatus: 200,
 };
 console.log("Environment:", process.env.ENV_MODE);
+app.use((0, helmet_1.default)());
 app.use((0, cors_1.default)(corsOptions));
 app.use(express_1.default.json({ limit: "10mb" }));
 app.use(express_1.default.urlencoded({ extended: true }));
-app.use((0, helmet_1.default)());
 app.use((0, cookie_parser_1.default)());
 // Mount Layered Application Routes
 app.use(auth_routes_1.default);
 app.use(course_routes_1.default);
 app.use(payment_routes_1.default);
 app.use(newsletter_routes_1.default);
+// Global fallbacks (must be mounted after all routes)
+app.use(errorHandler_1.notFoundHandler);
+app.use(errorHandler_1.errorHandler);
 app.listen(port, () => {
     return console.log(`Listening at http://localhost:${port}`);
 });

@@ -19,15 +19,24 @@ class AuthController {
             try {
                 const result = yield auth_service_1.AuthService.signup(req.body);
                 if (result.status !== 200) {
-                    return res.status(result.status).json({ message: result.message }).send();
+                    return res
+                        .status(result.status)
+                        .json({ message: result.message })
+                        .send();
                 }
                 return res
                     .status(200)
-                    .json({ message: result.message, verificationKey: result.verificationKey })
+                    .json({
+                    message: result.message,
+                    verificationKey: result.verificationKey,
+                })
                     .send();
             }
             catch (error) {
-                return res.status(500).json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" }).send();
+                return res
+                    .status(500)
+                    .json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" })
+                    .send();
             }
         });
     }
@@ -36,7 +45,10 @@ class AuthController {
             try {
                 const result = yield auth_service_1.AuthService.login(req.body);
                 if (result.status !== 200) {
-                    return res.status(result.status).json({ message: result.message }).send();
+                    return res
+                        .status(result.status)
+                        .json({ message: result.message })
+                        .send();
                 }
                 return res
                     .cookie(createJwt_1.tokenCookieName, result.token, cookieOptions_1.cookieOptions)
@@ -45,7 +57,10 @@ class AuthController {
                     .send();
             }
             catch (error) {
-                return res.status(500).json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید", error }).send();
+                return res
+                    .status(500)
+                    .json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" })
+                    .send();
             }
         });
     }
@@ -61,12 +76,21 @@ class AuthController {
             try {
                 const result = yield auth_service_1.AuthService.forgotPassword(req.body.email);
                 if (result.status !== 200) {
-                    return res.status(result.status).json({ message: result.message }).send();
+                    return res
+                        .status(result.status)
+                        .json({ message: result.message })
+                        .send();
                 }
-                return res.status(200).json({ message: result.message, OTP: result.OTP }).send();
+                return res
+                    .status(200)
+                    .json({ message: result.message, OTP: result.OTP })
+                    .send();
             }
             catch (error) {
-                return res.status(500).json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید", error }).send();
+                return res
+                    .status(500)
+                    .json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" })
+                    .send();
             }
         });
     }
@@ -83,7 +107,10 @@ class AuthController {
                     .json({ message: result.message });
             }
             catch (error) {
-                return res.status(500).json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" }).send();
+                return res
+                    .status(500)
+                    .json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" })
+                    .send();
             }
         });
     }
@@ -95,7 +122,10 @@ class AuthController {
                 return res.status(result.status).json({ message: result.message }).send();
             }
             catch (error) {
-                return res.status(500).json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید", error }).send();
+                return res
+                    .status(500)
+                    .json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" })
+                    .send();
             }
         });
     }
@@ -111,7 +141,10 @@ class AuthController {
                     .send();
             }
             catch (error) {
-                return res.status(500).json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید", error }).send();
+                return res
+                    .status(500)
+                    .json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" })
+                    .send();
             }
         });
     }

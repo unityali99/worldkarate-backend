@@ -1,10 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { ZodSchema } from "zod";
 
-export const validate = (
-  schema: ZodSchema,
-  customMessage?: string
-) => {
+export const validate = (schema: ZodSchema, customMessage?: string) => {
   return async (req: Request, res: Response, next: NextFunction) => {
     const validation = await schema.safeParseAsync(req.body);
     if (!validation.success) {
@@ -16,7 +13,6 @@ export const validate = (
         .status(400)
         .json({
           message: firstError.message || "لطفا اطلاعات را به درستی وارد کنید",
-          error: firstError,
         })
         .send();
     }

@@ -15,25 +15,10 @@ export class PaymentController {
 
       return res.status(200).json(result);
     } catch (error) {
-      console.log(error);
-      const gatewayError =
-        error &&
-        typeof error === "object" &&
-        "response" in error &&
-        error.response &&
-        typeof error.response === "object" &&
-        "data" in error.response
-          ? error.response.data
-          : undefined;
-
+      console.error(error);
       return res
         .status(500)
-        .json({
-          message: "خطا در پردازش درخواست پرداخت",
-          error:
-            gatewayError ||
-            (error instanceof Error ? error.message : "خطای نامشخص"),
-        })
+        .json({ message: "خطا در پردازش درخواست پرداخت" })
         .send();
     }
   }
@@ -49,10 +34,9 @@ export class PaymentController {
 
       return res.status(200).json(result);
     } catch (error: any) {
-      console.log(error);
+      console.error(error);
       return res.status(500).json({
         message: "خطا در تایید پرداخت",
-        error: error?.data?.errors?.[0] || error?.message || "خطای نامشخص",
       });
     }
   }

@@ -14,7 +14,10 @@ const client_1 = require("@prisma/client");
 const user_repository_1 = require("../src/repositories/user.repository");
 function adminAuth(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        const userPayload = req.user || req.body.user;
+        const userPayload = req.user;
+        if (!userPayload) {
+            return res.status(403).json({ message: "Access Denied" }).send();
+        }
         try {
             const user = yield user_repository_1.UserRepository.findById(userPayload.id);
             if (!user || (user.role !== client_1.Role.ADMIN && user.role !== client_1.Role.INSTRUCTOR))
@@ -22,7 +25,8 @@ function adminAuth(req, res, next) {
             next();
         }
         catch (error) {
-            res.json({ message: "Access Denied", error }).status(403).end();
+            // Do not leak the underlying error to the client.
+            res.status(403).json({ message: "Access Denied" }).end();
         }
     });
 }

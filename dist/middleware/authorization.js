@@ -18,20 +18,22 @@ const user_repository_1 = require("../src/repositories/user.repository");
 const createJwt_1 = require("../utils/createJwt");
 function authorization(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
-        let token;
-        if (req.cookies[`${createJwt_1.tokenCookieName}`])
-            token = req.cookies[`${createJwt_1.tokenCookieName}`];
+        var _a;
+        const token = (_a = req.cookies) === null || _a === void 0 ? void 0 : _a[createJwt_1.tokenCookieName];
+        if (!token) {
+            return res.status(403).json({ message: "Access Denied" }).end();
+        }
         try {
             const decodedUser = jsonwebtoken_1.default.verify(token, process.env.JWT_SECRET);
             const user = yield user_repository_1.UserRepository.findByEmail(decodedUser.email);
             if (!user)
-                return res.status(400).json({ message: "User not found" }).end();
+                return res.status(403).json({ message: "Access Denied" }).end();
             req.user = user;
-            req.body.user = user;
             next();
         }
         catch (error) {
-            return res.json({ message: "Access Denied", error }).status(403).end();
+            // Do not leak the underlying JWT/verification error to the client.
+            return res.status(403).json({ message: "Access Denied" }).end();
         }
     });
 }

@@ -7,22 +7,24 @@ import { tokenCookieName } from "../utils/createJwt";
 export async function authorization(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
-  let token: string;
-  if (req.cookies[`${tokenCookieName}`])
-    token = req.cookies[`${tokenCookieName}`];
+  const token: string | undefined = req.cookies?.[tokenCookieName];
+  if (!token) {
+    return res.status(403).json({ message: "Access Denied" }).end();
+  }
+
   try {
-    const decodedUser = jwt.verify(token as string, process.env.JWT_SECRET!);
+    const decodedUser = jwt.verify(token, process.env.JWT_SECRET!);
 
     const user = await UserRepository.findByEmail((decodedUser as User).email);
 
-    if (!user) return res.status(400).json({ message: "User not found" }).end();
+    if (!user) return res.status(403).json({ message: "Access Denied" }).end();
 
     req.user = user;
-    req.body.user = user;
     next();
   } catch (error) {
-    return res.json({ message: "Access Denied", error }).status(403).end();
+    // Do not leak the underlying JWT/verification error to the client.
+    return res.status(403).json({ message: "Access Denied" }).end();
   }
 }

@@ -5,9 +5,13 @@ import { UserRepository } from "../src/repositories/user.repository";
 export async function adminAuth(
   req: Request,
   res: Response,
-  next: NextFunction
+  next: NextFunction,
 ) {
-  const userPayload: User = req.user || req.body.user;
+  const userPayload: User | undefined = req.user;
+  if (!userPayload) {
+    return res.status(403).json({ message: "Access Denied" }).send();
+  }
+
   try {
     const user = await UserRepository.findById(userPayload.id);
 
@@ -16,6 +20,7 @@ export async function adminAuth(
 
     next();
   } catch (error) {
-    res.json({ message: "Access Denied", error }).status(403).end();
+    // Do not leak the underlying error to the client.
+    res.status(403).json({ message: "Access Denied" }).end();
   }
 }

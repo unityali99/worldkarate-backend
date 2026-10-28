@@ -8,16 +8,17 @@ const course_controller_1 = require("../controllers/course.controller");
 const authorization_1 = require("../../middleware/authorization");
 const adminAuth_1 = require("../../middleware/adminAuth");
 const validate_1 = require("../../middleware/validate");
+const asyncHandler_1 = require("../../middleware/asyncHandler");
 const Course_1 = __importDefault(require("../../schemas/Course"));
 const router = (0, express_1.Router)();
 // Public course fetching
-router.get("/fetch-course", course_controller_1.CourseController.getAll);
-router.get("/fetch-course/:courseId", course_controller_1.CourseController.getById);
+router.get("/fetch-course", (0, asyncHandler_1.asyncHandler)(course_controller_1.CourseController.getAll));
+router.get("/fetch-course/:courseId", (0, asyncHandler_1.asyncHandler)(course_controller_1.CourseController.getById));
 // Admin course management
-router.post("/create-course", authorization_1.authorization, adminAuth_1.adminAuth, (0, validate_1.validate)(Course_1.default), course_controller_1.CourseController.create);
-router.delete("/delete-course/:courseId", authorization_1.authorization, adminAuth_1.adminAuth, course_controller_1.CourseController.delete);
-router.get("/admin/fetch-course/:email", authorization_1.authorization, adminAuth_1.adminAuth, course_controller_1.CourseController.getAdminCoursesByEmail);
+router.post("/create-course", authorization_1.authorization, adminAuth_1.adminAuth, (0, validate_1.validate)(Course_1.default), (0, asyncHandler_1.asyncHandler)(course_controller_1.CourseController.create));
+router.delete("/delete-course/:courseId", authorization_1.authorization, adminAuth_1.adminAuth, (0, asyncHandler_1.asyncHandler)(course_controller_1.CourseController.delete));
+router.get("/admin/fetch-course/:email", authorization_1.authorization, adminAuth_1.adminAuth, (0, asyncHandler_1.asyncHandler)(course_controller_1.CourseController.getAdminCoursesByEmail));
 // User enrolled courses
-router.get("/user/fetch-course", authorization_1.authorization, course_controller_1.CourseController.getUserCourses);
+router.get("/user/fetch-course", authorization_1.authorization, (0, asyncHandler_1.asyncHandler)(course_controller_1.CourseController.getUserCourses));
 exports.default = router;
 //# sourceMappingURL=course.routes.js.map

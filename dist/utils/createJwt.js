@@ -7,12 +7,14 @@ exports.createJwt = exports.tokenCookieName = void 0;
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 exports.tokenCookieName = "auth-token";
 const createJwt = (user) => {
+    const expiresIn = (process.env.JWT_EXPIRES_IN ||
+        "10d");
     return jsonwebtoken_1.default.sign({
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
         role: user.role,
-    }, process.env.JWT_SECRET);
+    }, process.env.JWT_SECRET, { expiresIn });
 };
 exports.createJwt = createJwt;
 //# sourceMappingURL=createJwt.js.map

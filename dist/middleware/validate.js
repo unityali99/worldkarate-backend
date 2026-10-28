@@ -22,7 +22,6 @@ const validate = (schema, customMessage) => {
                 .status(400)
                 .json({
                 message: firstError.message || "لطفا اطلاعات را به درستی وارد کنید",
-                error: firstError,
             })
                 .send();
         }

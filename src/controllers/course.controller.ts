@@ -7,7 +7,9 @@ export class CourseController {
       const courses = await CourseService.getAllCourses();
       return res.status(200).json(courses);
     } catch (error) {
-      return res.status(500).json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید", error });
+      return res
+        .status(500)
+        .json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" });
     }
   }
 
@@ -16,11 +18,16 @@ export class CourseController {
     try {
       const result = await CourseService.getCourseById(courseId);
       if (result.status !== 200) {
-        return res.status(result.status).json({ message: result.message }).send();
+        return res
+          .status(result.status)
+          .json({ message: result.message })
+          .send();
       }
       return res.status(200).json(result.course);
     } catch (error) {
-      return res.status(400).json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" });
+      return res
+        .status(400)
+        .json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" });
     }
   }
 
@@ -29,7 +36,10 @@ export class CourseController {
       const result = await CourseService.createCourse(req.body);
       return res.status(200).json(result).send();
     } catch (error) {
-      return res.status(500).json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید", error }).send();
+      return res
+        .status(500)
+        .json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" })
+        .send();
     }
   }
 
@@ -39,7 +49,9 @@ export class CourseController {
       const result = await CourseService.deleteCourse(id);
       return res.status(200).json(result);
     } catch (error) {
-      return res.status(500).json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید", error });
+      return res
+        .status(500)
+        .json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" });
     }
   }
 
@@ -49,7 +61,9 @@ export class CourseController {
       const courses = await CourseService.getUserCourses(user.id);
       return res.status(200).json(courses);
     } catch (error) {
-      return res.status(500).json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید", error });
+      return res
+        .status(500)
+        .json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" });
     }
   }
 
@@ -62,7 +76,9 @@ export class CourseController {
       }
       return res.status(200).json(result.courses);
     } catch (error) {
-      return res.status(500).json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید", error });
+      return res
+        .status(500)
+        .json({ message: "خطا در سرور. لطفا به پشتیبانی پیام دهید" });
     }
   }
 }

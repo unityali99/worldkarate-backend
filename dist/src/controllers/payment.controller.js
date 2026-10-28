@@ -24,29 +24,16 @@ class PaymentController {
                 return res.status(200).json(result);
             }
             catch (error) {
-                console.log(error);
-                const gatewayError = error &&
-                    typeof error === "object" &&
-                    "response" in error &&
-                    error.response &&
-                    typeof error.response === "object" &&
-                    "data" in error.response
-                    ? error.response.data
-                    : undefined;
+                console.error(error);
                 return res
                     .status(500)
-                    .json({
-                    message: "خطا در پردازش درخواست پرداخت",
-                    error: gatewayError ||
-                        (error instanceof Error ? error.message : "خطای نامشخص"),
-                })
+                    .json({ message: "خطا در پردازش درخواست پرداخت" })
                     .send();
             }
         });
     }
     static verify(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
-            var _a, _b;
             try {
                 const { authority } = req.body;
                 const result = yield payment_service_1.PaymentService.verify(authority);
@@ -56,10 +43,9 @@ class PaymentController {
                 return res.status(200).json(result);
             }
             catch (error) {
-                console.log(error);
+                console.error(error);
                 return res.status(500).json({
                     message: "خطا در تایید پرداخت",
-                    error: ((_b = (_a = error === null || error === void 0 ? void 0 : error.data) === null || _a === void 0 ? void 0 : _a.errors) === null || _b === void 0 ? void 0 : _b[0]) || (error === null || error === void 0 ? void 0 : error.message) || "خطای نامشخص",
                 });
             }
         });
