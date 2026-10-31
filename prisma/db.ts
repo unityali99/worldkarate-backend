@@ -1,18 +1,18 @@
 import "dotenv/config";
-import { Pool } from "pg";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 
 const rawUrl = process.env.DATABASE_URL || "";
 const connectionString = rawUrl.includes("?") ? rawUrl.split("?")[0] : rawUrl;
 
-const pool = new Pool({
+// The adapter owns its own `pg` copy, so a `pg.Pool` created here fails its
+// `instanceof` check and silently falls back to localhost. Pass the pool config instead.
+const adapter = new PrismaPg({
   connectionString,
   ssl: {
     rejectUnauthorized: false,
   },
 });
-const adapter = new PrismaPg(pool);
 
 const prismaClientSingleton = () => {
   return new PrismaClient({ adapter });
@@ -27,4 +27,3 @@ const prisma = globalThis.prismaGlobal ?? prismaClientSingleton();
 export default prisma;
 
 if (process.env.NODE_ENV !== "production") globalThis.prismaGlobal = prisma;
-

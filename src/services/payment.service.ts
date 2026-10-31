@@ -23,15 +23,12 @@ export class PaymentService {
       };
     }
 
-    const totalPrice = courses.reduce(
-      (acc, current) => acc + current.price,
-      0
-    );
+    const totalPrice = courses.reduce((acc, current) => acc + current.price, 0);
 
     for (const { id } of courses) {
       const alreadyEnrolled = await UserRepository.findUserCourseEnrollment(
         user.id,
-        id
+        id,
       );
       if (alreadyEnrolled) {
         return {
@@ -57,7 +54,8 @@ export class PaymentService {
         userId: user.id,
         totalPrice,
         authority,
-        courseIds: courses.map((c) => c.id),
+        // Prices are snapshotted here: verify must never re-read the catalog.
+        courses: courses.map((c) => ({ id: c.id, price: c.price })),
       });
 
       const paymentUrl = zarinpal.payments.getRedirectUrl(authority);
@@ -79,9 +77,8 @@ export class PaymentService {
   }
 
   static async verify(authority: string) {
-    const transaction = await TransactionRepository.findByAuthorityWithDetails(
-      authority
-    );
+    const transaction =
+      await TransactionRepository.findByAuthorityWithDetails(authority);
 
     if (!transaction) {
       return {
@@ -113,16 +110,20 @@ export class PaymentService {
       await TransactionRepository.markAsPaid(transaction.id, refId);
 
       const courseIds = transaction.transactionsOnCourses.map(
-        (tc) => tc.courseId
+        (tc) => tc.courseId,
       );
-      await UserRepository.enrollCourses(transaction.userId, courseIds);
+      await UserRepository.enrollCourses(
+        transaction.userId,
+        courseIds,
+        transaction.id,
+      );
 
       return {
         status: 200 as const,
         message: "پرداخت با موفقیت انجام شد",
         courses,
         transaction: {
-          transactionId: refId,
+          refId,
           isPaid: true,
           totalPrice: transaction.totalPrice,
         },

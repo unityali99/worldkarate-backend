@@ -30,19 +30,21 @@ export class TransactionRepository {
     userId: number;
     totalPrice: number;
     authority: string;
-    courseIds: number[];
+    courses: { id: number; price: number }[];
   }) {
-    const { userId, totalPrice, authority, courseIds } = params;
+    const { userId, totalPrice, authority, courses } = params;
     return prisma.transaction.create({
       data: {
         isPaid: false,
-        transactionId: authority,
         totalPrice,
         authority,
         user: { connect: { id: userId } },
         transactionsOnCourses: {
           createMany: {
-            data: courseIds.map((courseId) => ({ courseId })),
+            data: courses.map(({ id, price }) => ({
+              courseId: id,
+              priceAtPurchase: price,
+            })),
           },
         },
       },
@@ -52,7 +54,7 @@ export class TransactionRepository {
   static async markAsPaid(id: number, refId: string) {
     return prisma.transaction.update({
       where: { id },
-      data: { isPaid: true, transactionId: refId },
+      data: { isPaid: true, gatewayRefId: refId },
     });
   }
 }

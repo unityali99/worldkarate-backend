@@ -1,9 +1,8 @@
 import "dotenv/config";
-import { Role } from "@prisma/client";
 import bcrypt from "bcrypt";
 import prisma from "./db";
 import { generateUniqueString } from "../utils/generateUniqueString";
-import capitalizeFirstLetter from "../utils/capitlizeFirstLetter";
+import { buildAdminSeedData } from "./adminSeedData";
 
 async function main() {
   const email = process.env.ADMIN_EMAIL || "admin@worldkarate.com";
@@ -11,41 +10,35 @@ async function main() {
   const firstName = process.env.ADMIN_FIRSTNAME || "Admin";
   const lastName = process.env.ADMIN_LASTNAME || "User";
 
+  const encryptedPassword = await bcrypt.hash(
+    password,
+    Number(process.env.ROUNDS) || 10,
+  );
+
+  const { create, update } = buildAdminSeedData(
+    { email, firstName, lastName, passwordHash: encryptedPassword },
+    generateUniqueString(83),
+  );
+
   const existingUser = await prisma.user.findUnique({
     where: { email },
   });
 
-  const encryptedPassword = await bcrypt.hash(
-    password,
-    Number(process.env.ROUNDS) || 10
-  );
-
   if (existingUser) {
     const updated = await prisma.user.update({
       where: { email },
-      data: {
-        role: Role.ADMIN,
-        verified: true,
-        password: encryptedPassword,
-        firstName: capitalizeFirstLetter(firstName),
-        lastName: capitalizeFirstLetter(lastName),
-      },
+      data: update,
     });
-    console.log(`✅ Admin user '${email}' updated successfully! (ID: ${updated.id}, Role: ${updated.role})`);
+    console.log(
+      `✅ Admin user '${email}' updated successfully! (ID: ${updated.id}, Role: ${updated.role})`,
+    );
   } else {
-    const verificationKey = generateUniqueString(83);
     const created = await prisma.user.create({
-      data: {
-        email,
-        firstName: capitalizeFirstLetter(firstName),
-        lastName: capitalizeFirstLetter(lastName),
-        password: encryptedPassword,
-        role: Role.ADMIN,
-        verified: true,
-        verificationKey,
-      },
+      data: create,
     });
-    console.log(`✅ Admin user '${email}' created successfully! (ID: ${created.id}, Role: ${created.role})`);
+    console.log(
+      `✅ Admin user '${email}' created successfully! (ID: ${created.id}, Role: ${created.role})`,
+    );
   }
 }
 

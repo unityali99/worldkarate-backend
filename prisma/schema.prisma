@@ -47,38 +47,43 @@ model Course {
 model Transaction {
   id                    Int                     @id @unique @default(autoincrement())
   isPaid                Boolean                 @default(false) // becomes true after verification
-  transactionId         String                  @unique // ZarinPal's `authority`
+  authority             String                  @unique // ZarinPal's `authority`, created once per payment attempt
+  gatewayRefId          String?                 @unique // ZarinPal's `ref_id`, set only after a successful verification
   totalPrice            Int // sum of course prices
   user                  User                    @relation(fields: [userId], references: [id])
   userId                Int
   transactionsOnCourses TransactionsOnCourses[]
+  usersOnCourses        UsersOnCourses[]
   createdAt             DateTime                @default(now())
   updatedAt             DateTime                @updatedAt
-  authority             String                  @unique @default(uuid())
 
-  @@index([transactionId])
+  @@index([gatewayRefId])
   @@index([userId])
   @@index([authority])
 }
 
 model UsersOnCourses {
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-  course    Course   @relation(fields: [courseId], references: [id])
-  courseId  Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  user          User        @relation(fields: [userId], references: [id])
+  userId        Int
+  course        Course      @relation(fields: [courseId], references: [id])
+  courseId      Int
+  transaction   Transaction? @relation(fields: [transactionId], references: [id], onDelete: SetNull)
+  transactionId Int?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
 
   @@id([userId, courseId])
+  @@index([transactionId])
 }
 
 model TransactionsOnCourses {
-  course        Course      @relation(fields: [courseId], references: [id])
-  courseId      Int
-  transaction   Transaction @relation(fields: [transactionId], references: [id])
-  transactionId Int
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  course          Course      @relation(fields: [courseId], references: [id])
+  courseId        Int
+  transaction     Transaction @relation(fields: [transactionId], references: [id])
+  transactionId   Int
+  priceAtPurchase Int // course price in Rials, frozen at checkout
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
 
   @@id([transactionId, courseId])
 }

@@ -53,7 +53,8 @@ class PaymentService {
                     userId: user.id,
                     totalPrice,
                     authority,
-                    courseIds: courses.map((c) => c.id),
+                    // Prices are snapshotted here: verify must never re-read the catalog.
+                    courses: courses.map((c) => ({ id: c.id, price: c.price })),
                 });
                 const paymentUrl = zarinpal_1.zarinpal.payments.getRedirectUrl(authority);
                 return {
@@ -98,13 +99,13 @@ class PaymentService {
                 const refId = String(verification.data.ref_id);
                 yield transaction_repository_1.TransactionRepository.markAsPaid(transaction.id, refId);
                 const courseIds = transaction.transactionsOnCourses.map((tc) => tc.courseId);
-                yield user_repository_1.UserRepository.enrollCourses(transaction.userId, courseIds);
+                yield user_repository_1.UserRepository.enrollCourses(transaction.userId, courseIds, transaction.id);
                 return {
                     status: 200,
                     message: "پرداخت با موفقیت انجام شد",
                     courses,
                     transaction: {
-                        transactionId: refId,
+                        refId,
                         isPaid: true,
                         totalPrice: transaction.totalPrice,
                     },

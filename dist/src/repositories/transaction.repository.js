@@ -46,17 +46,19 @@ class TransactionRepository {
     }
     static createPendingTransaction(params) {
         return __awaiter(this, void 0, void 0, function* () {
-            const { userId, totalPrice, authority, courseIds } = params;
+            const { userId, totalPrice, authority, courses } = params;
             return db_1.default.transaction.create({
                 data: {
                     isPaid: false,
-                    transactionId: authority,
                     totalPrice,
                     authority,
                     user: { connect: { id: userId } },
                     transactionsOnCourses: {
                         createMany: {
-                            data: courseIds.map((courseId) => ({ courseId })),
+                            data: courses.map(({ id, price }) => ({
+                                courseId: id,
+                                priceAtPurchase: price,
+                            })),
                         },
                     },
                 },
@@ -67,7 +69,7 @@ class TransactionRepository {
         return __awaiter(this, void 0, void 0, function* () {
             return db_1.default.transaction.update({
                 where: { id },
-                data: { isPaid: true, transactionId: refId },
+                data: { isPaid: true, gatewayRefId: refId },
             });
         });
     }

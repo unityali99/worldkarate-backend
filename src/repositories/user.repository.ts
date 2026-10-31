@@ -47,13 +47,17 @@ export class UserRepository {
     });
   }
 
-  static async enrollCourses(userId: number, courseIds: number[]) {
+  static async enrollCourses(
+    userId: number,
+    courseIds: number[],
+    transactionId: number,
+  ) {
     return prisma.user.update({
       where: { id: userId },
       data: {
         courses: {
           createMany: {
-            data: courseIds.map((courseId) => ({ courseId })),
+            data: courseIds.map((courseId) => ({ courseId, transactionId })),
             skipDuplicates: true,
           },
         },

@@ -65,14 +65,14 @@ class UserRepository {
             });
         });
     }
-    static enrollCourses(userId, courseIds) {
+    static enrollCourses(userId, courseIds, transactionId) {
         return __awaiter(this, void 0, void 0, function* () {
             return db_1.default.user.update({
                 where: { id: userId },
                 data: {
                     courses: {
                         createMany: {
-                            data: courseIds.map((courseId) => ({ courseId })),
+                            data: courseIds.map((courseId) => ({ courseId, transactionId })),
                             skipDuplicates: true,
                         },
                     },

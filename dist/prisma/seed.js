@@ -13,46 +13,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv/config");
-const client_1 = require("@prisma/client");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const db_1 = __importDefault(require("./db"));
 const generateUniqueString_1 = require("../utils/generateUniqueString");
-const capitlizeFirstLetter_1 = __importDefault(require("../utils/capitlizeFirstLetter"));
+const adminSeedData_1 = require("./adminSeedData");
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const email = process.env.ADMIN_EMAIL || "admin@worldkarate.com";
         const password = process.env.ADMIN_PASSWORD || "Admin123456";
         const firstName = process.env.ADMIN_FIRSTNAME || "Admin";
         const lastName = process.env.ADMIN_LASTNAME || "User";
+        const encryptedPassword = yield bcrypt_1.default.hash(password, Number(process.env.ROUNDS) || 10);
+        const { create, update } = (0, adminSeedData_1.buildAdminSeedData)({ email, firstName, lastName, passwordHash: encryptedPassword }, (0, generateUniqueString_1.generateUniqueString)(83));
         const existingUser = yield db_1.default.user.findUnique({
             where: { email },
         });
-        const encryptedPassword = yield bcrypt_1.default.hash(password, Number(process.env.ROUNDS) || 10);
         if (existingUser) {
             const updated = yield db_1.default.user.update({
                 where: { email },
-                data: {
-                    role: client_1.Role.ADMIN,
-                    verified: true,
-                    password: encryptedPassword,
-                    firstName: (0, capitlizeFirstLetter_1.default)(firstName),
-                    lastName: (0, capitlizeFirstLetter_1.default)(lastName),
-                },
+                data: update,
             });
             console.log(`✅ Admin user '${email}' updated successfully! (ID: ${updated.id}, Role: ${updated.role})`);
         }
         else {
-            const verificationKey = (0, generateUniqueString_1.generateUniqueString)(83);
             const created = yield db_1.default.user.create({
-                data: {
-                    email,
-                    firstName: (0, capitlizeFirstLetter_1.default)(firstName),
-                    lastName: (0, capitlizeFirstLetter_1.default)(lastName),
-                    password: encryptedPassword,
-                    role: client_1.Role.ADMIN,
-                    verified: true,
-                    verificationKey,
-                },
+                data: create,
             });
             console.log(`✅ Admin user '${email}' created successfully! (ID: ${created.id}, Role: ${created.role})`);
         }
