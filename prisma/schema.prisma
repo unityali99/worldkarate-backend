@@ -28,20 +28,29 @@ model User {
   instructedCourses Course[]         @relation("InstructorCourses")
   transactions      Transaction[]
   isAdmin           Boolean          @default(false)
+  lessonProgress    LessonProgress[]
+  instructorProfile InstructorProfile?
 }
 
 model Course {
-  id           Int                     @id @unique @default(autoincrement())
-  title        String
-  description  String
-  price        Int // in Rials
-  img          String
-  link         String?
-  previewLinks String[]
-  instructorId Int?
-  instructor   User?                   @relation("InstructorCourses", fields: [instructorId], references: [id], onDelete: SetNull)
-  users        UsersOnCourses[]
-  transactions TransactionsOnCourses[]
+  id            Int                     @id @unique @default(autoincrement())
+  title         String
+  description   String // short summary shown in listings; the long article lives in `blocks`
+  price         Int // in Rials
+  img           String // cover image path, also used by the current frontend
+  link          String?
+  previewLinks  String[]
+  isForAnyStyle Boolean                 @default(false) // true = not limited to specific karate styles
+  deletedAt     DateTime? // soft delete: purchases and transactions must survive retirement of a course
+  instructorId  Int?
+  instructor    User?                   @relation("InstructorCourses", fields: [instructorId], references: [id], onDelete: SetNull)
+  users         UsersOnCourses[]
+  transactions  TransactionsOnCourses[]
+  sections      Section[]
+  styles        CourseStyle[]
+  blocks        ContentBlock[]
+
+  @@index([instructorId]) // ownership checks: "which courses does this instructor manage?"
 }
 
 model Transaction {
@@ -91,4 +100,136 @@ model TransactionsOnCourses {
 model Newsletter {
   id    Int    @id @default(autoincrement())
   email String @unique
+}
+
+// A ordered group of lessons inside a course: the expandable row in the course page.
+model Section {
+  id          Int              @id @default(autoincrement())
+  courseId    Int
+  course      Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  coverImg    String? // storage path, e.g. media/12/section-3.jpg
+  position    Int // ordering inside the course, unique per course
+  deletedAt   DateTime?
+  lessons     Lesson[]
+  blocks      ContentBlock[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([courseId, position])
+}
+
+// One playable unit. Storage is described by paths only, never by URLs, so the
+// delivery backend (origin vs. CDN) stays a configuration detail.
+model Lesson {
+  id          Int              @id @default(autoincrement())
+  sectionId   Int
+  section     Section          @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  title       String
+  description String?
+  coverImg    String? // doubles as the video thumbnail
+  position    Int // ordering inside the section, unique per section
+  durationSec Int              @default(0) // from ffprobe at publish time
+  assetPrefix String? // storage prefix, e.g. hls/12/7/a8f3c1d2. Null until the packaged files are uploaded
+  isPreview   Boolean          @default(false) // true = playable by anyone, including anonymous visitors
+  deletedAt   DateTime?
+  key         LessonKey? // absent until the lesson is packaged: no key, no playback
+  progress    LessonProgress[]
+  blocks      ContentBlock[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  @@unique([sectionId, position])
+}
+
+// The AES-128 key of one lesson, wrapped with the KEYS_MAIN_KEY env secret before
+// it is stored. Kept in its own table so a plain lesson query can never select key
+// material, and deleted together with the lesson by the cascade below.
+model LessonKey {
+  id         Int      @id @default(autoincrement())
+  lesson     Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  lessonId   Int      @unique
+  wrappedKey Bytes // the 16-byte HLS key, encrypted at rest
+  iv         Bytes // nonce used by the wrapping algorithm
+  algorithm  String   @default("aes-256-gcm") // wrapping algorithm, not the video cipher
+  createdAt  DateTime @default(now())
+}
+
+// How far a user has watched a lesson, so an interrupted connection can resume.
+model LessonProgress {
+  userId      Int
+  lessonId    Int
+  user        User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson      Lesson  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  positionSec Int     @default(0)
+  completedAt DateTime? // set once the viewer reaches the end of the lesson
+  updatedAt   DateTime @updatedAt
+
+  @@id([userId, lessonId])
+  @@index([lessonId])
+}
+
+// Karate styles a course can belong to (kata, kumite, self-defence, ...). Kept as
+// rows instead of an enum so the panel can add or rename styles without a deployment.
+model Style {
+  id      Int           @id @default(autoincrement())
+  name    String        @unique // display name, e.g. "کاتا"
+  slug    String        @unique // stable identifier for the frontend, e.g. "kata"
+  courses CourseStyle[]
+}
+
+model CourseStyle {
+  courseId  Int
+  styleId   Int
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  style     Style    @relation(fields: [styleId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@id([courseId, styleId])
+  @@index([styleId]) // "list every kata course"
+}
+
+// One editable piece of the article-like content the instructor composes: a heading,
+// a paragraph, an image, or a video. Media here is PUBLIC marketing content and lives
+// under the media/ prefix - it is never HLS-encrypted like a lesson video is.
+enum BlockType {
+  HEADING
+  TEXT
+  IMAGE
+  VIDEO
+}
+
+model ContentBlock {
+  id        Int       @id @default(autoincrement())
+  type      BlockType
+  body      String // text content, or a storage path for IMAGE/VIDEO (e.g. media/12/trailer.mp4)
+  caption   String?
+  position  Int // ordering inside its owner
+  courseId  Int?
+  sectionId Int?
+  lessonId  Int?
+  course    Course?   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  section   Section?  @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  lesson    Lesson?   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  // Exactly one of courseId / sectionId / lessonId must be set; that rule is enforced
+  // in the request schema, because a database check would show up as schema drift.
+  @@index([courseId, position])
+  @@index([sectionId, position])
+  @@index([lessonId, position])
+}
+
+// Public, retrievable biography shown on the course details page. Identity and login
+// stay on User; this is display content owned by the instructor.
+model InstructorProfile {
+  userId    Int      @id
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bio       String
+  photo     String? // storage path, e.g. media/instructors/7.jpg
+  rank      String? // belt, dan, or federation role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
