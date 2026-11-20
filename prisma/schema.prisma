@@ -41,6 +41,7 @@ model Course {
   link          String?
   previewLinks  String[]
   isForAnyStyle Boolean                 @default(false) // true = not limited to specific karate styles
+  publishedAt   DateTime? // null = draft, invisible to students; set = live in the catalogue
   deletedAt     DateTime? // soft delete: purchases and transactions must survive retirement of a course
   instructorId  Int?
   instructor    User?                   @relation("InstructorCourses", fields: [instructorId], references: [id], onDelete: SetNull)
@@ -49,6 +50,8 @@ model Course {
   sections      Section[]
   styles        CourseStyle[]
   blocks        ContentBlock[]
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
 
   @@index([instructorId]) // ownership checks: "which courses does this instructor manage?"
 }
@@ -120,27 +123,40 @@ model Section {
   @@unique([courseId, position])
 }
 
+enum LessonProcessState {
+  NONE
+  UPLOADED
+  PROCESSING
+  READY
+  FAILED
+}
+
 // One playable unit. Storage is described by paths only, never by URLs, so the
 // delivery backend (origin vs. CDN) stays a configuration detail.
 model Lesson {
-  id          Int              @id @default(autoincrement())
-  sectionId   Int
-  section     Section          @relation(fields: [sectionId], references: [id], onDelete: Cascade)
-  title       String
-  description String?
-  coverImg    String? // doubles as the video thumbnail
-  position    Int // ordering inside the section, unique per section
-  durationSec Int              @default(0) // from ffprobe at publish time
-  assetPrefix String? // storage prefix, e.g. hls/12/7/a8f3c1d2. Null until the packaged files are uploaded
-  isPreview   Boolean          @default(false) // true = playable by anyone, including anonymous visitors
-  deletedAt   DateTime?
-  key         LessonKey? // absent until the lesson is packaged: no key, no playback
-  progress    LessonProgress[]
-  blocks      ContentBlock[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id              Int                @id @default(autoincrement())
+  sectionId       Int
+  section         Section            @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  title           String
+  description     String?
+  coverImg        String? // doubles as the video thumbnail
+  position        Int // ordering inside the section, unique per section
+  durationSec     Int                @default(0) // from ffprobe at publish time
+  assetPrefix     String? // storage prefix, e.g. hls/12/7/a8f3c1d2. Null until the packaged files are uploaded
+  masterKey       String? // storage path of the uploaded raw original video in the private bucket
+  processState    LessonProcessState @default(NONE)
+  processingSince DateTime? // timestamp when worker claimed the job, for crash/timeout recovery
+  failureInfo     String? // transcode failure details for admin diagnosis
+  isPreview       Boolean            @default(false) // true = playable by anyone, including anonymous visitors
+  deletedAt       DateTime?
+  key             LessonKey? // absent until the lesson is packaged: no key, no playback
+  progress        LessonProgress[]
+  blocks          ContentBlock[]
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
 
   @@unique([sectionId, position])
+  @@index([processState])
 }
 
 // The AES-128 key of one lesson, wrapped with the KEYS_MAIN_KEY env secret before
